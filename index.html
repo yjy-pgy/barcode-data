@@ -182,7 +182,7 @@ function startPoll(){
   var st=Date.now(),started=false;
   pt=setInterval(function(){
     var t=tk();
-    var u='https://api.github.com/repos/'+GR+'/contents/status.json';
+    var u='https://api.github.com/repos/'+O+'/'+R+'/contents/status.json';
     console.log('[Poll] fetching status.json...');
     fetch(u,{headers:{'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json'}}).then(function(r){console.log('[Poll] status:', r.status);if(!r.ok)throw 0;return r.json()}).then(function(f){
       if(!f.content)throw 0;
