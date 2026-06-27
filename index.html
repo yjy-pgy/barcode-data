@@ -76,6 +76,9 @@ input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(102,126,234,.1
     <button id="main-btn" class="btn bp" onclick="submit()">开始更新</button>
     <button class="btn bo" onclick="$('inp').value=''">清空</button>
   </div>
+  <div class="brow" id="clear-area" style="display:none">
+    <button id="clear-btn" class="btn bo" onclick="clearBarcodes()">清空任务</button>
+  </div>
   <div class="pw" id="pw"><div class="pt"><div class="pf" id="pf"></div></div><div class="pl" id="pl">等待开始...</div></div>
   <div class="info" id="msg"></div>
 </div>
@@ -195,6 +198,7 @@ function startUpdate(){
   btn.textContent='停止更新';
   btn.disabled=false;
   $('pw').style.display='block';
+  $('clear-area').style.display='none';
   $('pf').style.width='0%';
   $('pl').textContent='等待扩展处理...';
   isRunning=true;
@@ -226,6 +230,9 @@ function stopUpdate(){
   $('pw').style.display='none';
   log('已停止轮询');
   
+  // 停止后显示清空按钮
+  $('clear-area').style.display='flex';
+  
   var t=tk();
   api(C).then(function(f){
     if(f.sha){
@@ -241,6 +248,34 @@ function stopUpdate(){
   }).catch(function(){
     log('发送停止命令失败');
     toast('发送停止命令失败');
+  });
+}
+
+function clearBarcodes(){
+  var t=tk();if(!t)return toast('请先配置Token');
+  if(!confirm('确定要清空所有任务吗？'))return;
+  
+  var btn=$('clear-btn');
+  btn.disabled=true;btn.textContent='清空中...';
+  
+  // 清空 barcodes.json
+  api(F).then(function(f){
+    return api(F,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Clear all barcodes',content:btoa(unescape(encodeURIComponent(JSON.stringify([],null,2)))),sha:f.sha}});
+  }).then(function(){
+    clearSubmitted();
+    submittedCodes=[];
+    total=0;
+    saveTotal(0);
+    $('inp').value='';
+    $('clear-area').style.display='none';
+    btn.disabled=false;btn.textContent='清空任务';
+    log('任务已清空');
+    toast('任务已清空');
+    loadPend();
+  }).catch(function(e){
+    btn.disabled=false;btn.textContent='清空任务';
+    log('清空失败');
+    toast('清空失败');
   });
 }
 
