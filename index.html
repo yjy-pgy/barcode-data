@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>条码采集</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f6fa;color:#333;min-height:100vh}
+.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:20px;text-align:center}
+.header h1{font-size:18px;font-weight:600}
+.container{padding:16px;max-width:500px;margin:0 auto}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.card-title{font-size:14px;font-weight:600;color:#667eea;margin-bottom:12px}
+input,textarea{width:100%;padding:12px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;outline:none;transition:border-color .2s}
+input:focus,textarea:focus{border-color:#667eea}
+textarea{resize:vertical;min-height:120px;font-family:monospace;line-height:1.6}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;margin-top:10px;transition:opacity .2s}
+.btn:active{opacity:.8}
+.btn-primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:999;display:none}
+#status{margin-top:8px;font-size:12px;color:#999;text-align:center}
+label{font-size:12px;color:#666;margin-bottom:4px;display:block}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>条码采集管理</h1>
+</div>
+<div class="container">
+  <div class="card">
+    <div class="card-title">配置 Token</div>
+    <label>GitHub Personal Access Token（首次使用需填写，会自动保存）</label>
+    <input id="token-input" type="password" placeholder="ghp_xxxxxxxxxxxx">
+    <button class="btn btn-primary" onclick="saveToken()" style="background:#666;margin-top:8px">保存 Token</button>
+  </div>
+  <div class="card">
+    <div class="card-title">导入条码</div>
+    <textarea id="barcode-input" placeholder="每行一个条码&#10;6978xxxx50073&#10;6923xxxx01644&#10;6976xxxx75042"></textarea>
+    <button class="btn btn-primary" onclick="submitBarcodes()">提交条码</button>
+    <div id="status"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var OWNER = 'yjy-pgy';
+var REPO = 'barcode-data';
+var FILE = 'barcodes.json';
+
+function getToken() { return localStorage.getItem('gh_token') || ''; }
+function saveToken() {
+  var t = document.getElementById('token-input').value.trim();
+  if (!t) return showToast('请输入 Token');
+  localStorage.setItem('gh_token', t);
+  showToast('Token 已保存');
+}
+function showToast(m,d){d=d||1500;var t=document.getElementById("toast");t.textContent=m;t.style.display="block";setTimeout(function(){t.style.display="none"},d)}
+
+window.onload = function() {
+  var saved = getToken();
+  if (saved) document.getElementById('token-input').value = saved;
+};
+
+function getFile(token) {
+  return fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + FILE, {
+    headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
+  }).then(function(r) {
+    if (r.status === 404) return { content: '[]', sha: null };
+    return r.json();
+  });
+}
+
+function saveFile(token, content, sha, message) {
+  return fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + FILE, {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'token ' + token,
+      'Content-Type': 'application/json',
+      'Accept': 'application/vnd.github.v3+json'
+    },
+    body: JSON.stringify({
+      message: message,
+      content: btoa(unescape(encodeURIComponent(content))),
+      sha: sha
+    })
+  }).then(function(r) { return r.json(); });
+}
+
+function submitBarcodes() {
+  var token = getToken();
+  if (!token) return showToast('请先保存 Token');
+  var input = document.getElementById("barcode-input");
+  var text = input.value.trim();
+  if (!text) return showToast("请输入条码");
+  var codes = text.split(/[\n,\s]+/).map(function(s) { return s.trim(); }).filter(Boolean);
+  if (codes.length === 0) return showToast("请输入有效条码");
+
+  document.getElementById("status").textContent = "提交中...";
+  getFile(token).then(function(file) {
+    var existing = [];
+    try { existing = JSON.parse(decodeURIComponent(escape(atob(file.content)))); } catch(e) { existing = []; }
+    if (!Array.isArray(existing)) existing = [];
+    var newCodes = codes.filter(function(c) { return existing.indexOf(c) === -1; });
+    existing.push.apply(existing, newCodes);
+    var content = JSON.stringify(existing, null, 2);
+    return saveFile(token, content, file.sha, '添加 ' + newCodes.length + ' 个条码');
+  }).then(function(result) {
+    if (result.content) {
+      showToast("已提交 " + codes.length + " 个条码");
+      input.value = "";
+      document.getElementById("status").textContent = "提交成功";
+    } else {
+      showToast("提交失败: " + (result.message || "未知错误"));
+      document.getElementById("status").textContent = "提交失败";
+    }
+  }).catch(function(err) {
+    showToast("提交失败");
+    document.getElementById("status").textContent = err.message;
+  });
+}
+</script>
+</body>
+</html>
