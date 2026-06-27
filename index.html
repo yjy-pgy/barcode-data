@@ -195,7 +195,7 @@ function startPoll(){
   setStopBtn(true);
   $('s-s').textContent='0';$('s-r').textContent=subTotal||0;
   log('等待扩展处理...');
-  var st=Date.now(),done=false;
+  var st=Date.now(),done=false,resultRetry=0;
   pt=setInterval(function(){
     if(!tk()){stopPoll();return}
     api('status.json').then(function(f){
@@ -210,12 +210,17 @@ function startPoll(){
         done=true;
       }
       if(d.status==='done'){
-        clearInterval(pt);pt=null;
         $('s-s').textContent=d.total||subTotal;$('s-r').textContent=0;
         log('全部处理完成，共 '+(d.total||subTotal)+' 个条码');
-        setStopBtn(false);
-        toast('处理完成');
-        setTimeout(readResults,2000);
+        done=true;
+        resultRetry++;
+        if(resultRetry<=20){
+          readResults();
+        }else{
+          clearInterval(pt);pt=null;
+          setStopBtn(false);
+          toast('处理完成');
+        }
       }
     }).catch(function(){});
     if(Date.now()-st>600000){clearInterval(pt);pt=null;log('轮询超时（10分钟）');setStopBtn(false)}
