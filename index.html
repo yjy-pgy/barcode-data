@@ -53,7 +53,9 @@ input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(102,126,234,.1
 
 <div class="stats">
   <i class="st">总任务: <b id="s-t">0</b></i>
-  <i class="ss">已完成: <b id="s-s">0</b></i>
+  <i class="ss">成功: <b id="s-s">0</b></i>
+  <i class="sn">无商品: <b id="s-n">0</b></i>
+  <i class="sf">失败: <b id="s-f">0</b></i>
   <i class="sr">待处理: <b id="s-r">0</b></i>
 </div>
 <div class="log" id="log">等待操作...</div>
@@ -81,12 +83,17 @@ input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(102,126,234,.1
 <div class="tst" id="tst"></div>
 
 <script>
-var O='yjy-pgy',R='barcode-data',F='barcodes.json';
-var pollTimer=null,total=0,remaining=0,isRunning=false;
+var O='yjy-pgy',R='barcode-data',F='barcodes.json',C='control.json';
+var pollTimer=null,total=0,totalKey='gh_total',remaining=0,isRunning=false,submittedCodes=[],submittedKey='gh_submitted';
 
 function $(i){return document.getElementById(i)}
 function tk(){return localStorage.getItem('gh_token')||''}
 function saveTk(){var t=$('tk-in').value.trim();if(!t)return toast('请输入Token');localStorage.setItem('gh_token',t);toast('Token已保存');chk()}
+function loadTotal(){var t=parseInt(localStorage.getItem(totalKey))||0;return t}
+function saveTotal(t){localStorage.setItem(totalKey,t)}
+function loadSubmitted(){try{var s=localStorage.getItem(submittedKey);return s?JSON.parse(s):[]}catch(e){return[]}}
+function saveSubmitted(codes){localStorage.setItem(submittedKey,JSON.stringify(codes))}
+function clearSubmitted(){localStorage.removeItem(submittedKey);localStorage.removeItem(totalKey)}
 function chk(){var t=tk();$('tk-sec').classList[t?'add':'remove']('hd');if(t)loadPend()}
 function toast(m,d){d=d||1500;var t=$('tst');t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},d)}
 function log(m){$('log').textContent='['+new Date().toLocaleTimeString()+'] '+m}
@@ -96,15 +103,57 @@ function api(p,o){var h={'Accept':'application/vnd.github.v3+json'},t=tk();if(t)
 function parse(c){if(!c)return null;try{return JSON.parse(decodeURIComponent(escape(atob(c))))}catch(e){return null}}
 
 function loadPend(){
+  total=loadTotal();
+  submittedCodes=loadSubmitted();
+  // 恢复输入框内容
+  if(submittedCodes.length>0){
+    $('inp').value=submittedCodes.join('\n');
+  }
   api(F).then(function(f){
     var a=parse(f.content);
     var n=Array.isArray(a)?a.length:0;
     remaining=n;
     $('s-r').textContent=n;
     $('s-t').textContent=total>0?total:n;
-    $('s-s').textContent=total>0?total-n:0;
     if(n>0)log('队列中有 '+n+' 个条码等待处理');
-  }).catch(function(){})
+    else if(total>0){
+      log('总任务 '+total+' 个，已处理 '+(total-n)+' 个');
+      // 全部跑完，清除保存的条码
+      if(n===0&&submittedCodes.length>0){
+        clearSubmitted();
+        submittedCodes=[];
+        $('inp').value='';
+        toast('全部处理完成');
+      }
+    }
+  }).catch(function(){total=loadTotal()})
+  
+  api('status.json').then(function(f){
+    var r=parse(f.content);
+    var success=0,noGoods=0,fail=0;
+    // 新格式：{ barcodes: { barcode: { status, message, time } } }
+    if(r&&r.barcodes){
+      for(var k in r.barcodes){
+        var st=r.barcodes[k]?.status;
+        if(st==='success')success++;
+        else if(st==='noGoods')noGoods++;
+        else if(st==='fail')fail++;
+      }
+    }else if(r){
+      // 兼容旧格式：排除顶层字段（status, total, done, time）
+      var skipKeys=['status','total','done','time'];
+      for(var k in r){
+        if(skipKeys.indexOf(k)!==-1)continue;
+        var st=r[k]?.status;
+        if(st==='success')success++;
+        else if(st==='noGoods')noGoods++;
+        else if(st==='fail')fail++;
+      }
+    }
+    $('s-s').textContent=success;
+    $('s-n').textContent=noGoods;
+    $('s-f').textContent=fail;
+  }).catch(function(){});
 }
 
 function submit(){
@@ -124,12 +173,13 @@ function submit(){
       var ex=parse(f.content);if(!Array.isArray(ex))ex=[];
       var nc=codes.filter(function(c){return ex.indexOf(c)===-1});
       ex.push.apply(ex,nc);
-      return api(F,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'添加 '+nc.length+' 个条码',content:btoa(unescape(encodeURIComponent(JSON.stringify(ex,null,2)))),sha:f.sha}}).then(function(r){return{r:r,n:nc.length,t:codes.length}});
+      return api(F,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'添加 '+nc.length+' 个条码',content:btoa(unescape(encodeURIComponent(JSON.stringify(ex,null,2)))),sha:f.sha}}).then(function(r){return{r:r,n:nc.length,t:codes.length,codes:codes}});
     }).then(function(d){
       if(d.r.content){
+        submittedCodes=d.codes;
+        saveSubmitted(submittedCodes);
         msg('已提交 '+d.t+' 个条码',true);log('已提交 '+d.t+' 个条码');
-        inp.value='';
-        total=d.t;
+        total=d.t;saveTotal(total);
         startUpdate();
       }else{msg('提交失败',false);btn.disabled=false;btn.textContent='开始更新'}
     }).catch(function(e){msg('提交失败: '+e.message,false);btn.disabled=false;btn.textContent='开始更新'})
@@ -155,13 +205,30 @@ function startUpdate(){
 
 function stopUpdate(){
   if(pollTimer){clearInterval(pollTimer);pollTimer=null;}
+  isRunning=false;
+  submittedCodes=[];
   var btn=$('main-btn');
   btn.className='btn bp';
   btn.textContent='开始更新';
   $('pw').style.display='none';
-  isRunning=false;
   log('已停止轮询');
-  toast('已停止');
+  
+  var t=tk();
+  api(C).then(function(f){
+    if(f.sha){
+      return api(C,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Stop update',content:btoa(unescape(encodeURIComponent(JSON.stringify({action:'stop',time:Date.now()})))),sha:f.sha}});
+    }else{
+      return api(C,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Stop update',content:btoa(unescape(encodeURIComponent(JSON.stringify({action:'stop',time:Date.now()}))))}});
+    }
+  }).catch(function(){
+    return api(C,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Stop update',content:btoa(unescape(encodeURIComponent(JSON.stringify({action:'stop',time:Date.now()}))))}});
+  }).then(function(){
+    log('已发送停止命令');
+    toast('已发送停止命令');
+  }).catch(function(){
+    log('发送停止命令失败');
+    toast('发送停止命令失败');
+  });
 }
 
 function startPoll(){
@@ -169,10 +236,19 @@ function startPoll(){
   pollTimer=setInterval(function(){
     api(F).then(function(f){
       var a=parse(f.content);
-      var n=Array.isArray(a)?a.length:0;
+      var currentCodes=(Array.isArray(a)?a:[]).map(function(c){return String(c).trim()});
+      var n=currentCodes.length;
       remaining=n;
       $('s-r').textContent=n;
-      $('s-s').textContent=total>0?total-n:0;
+      
+      if(submittedCodes.length>0){
+        var remainingCodes=submittedCodes.filter(function(c){return currentCodes.indexOf(c)!==-1});
+        $('inp').value=remainingCodes.join('\n');
+        if(remainingCodes.length!==submittedCodes.length){
+          submittedCodes=remainingCodes;
+          saveSubmitted(submittedCodes);
+        }
+      }
       
       if(total>0){
         var done=total-n;
@@ -194,11 +270,42 @@ function startPoll(){
           btn.textContent='开始更新';
           $('pw').style.display='none';
           isRunning=false;
-          total=0;
+          clearSubmitted();
+          submittedCodes=[];
+          saveTotal(0);total=0;
         }
       }else{
         $('pl').textContent='等待扩展处理...';
       }
+    }).catch(function(){});
+    
+    api('status.json').then(function(f){
+      var r=parse(f.content);
+      var success=0,noGoods=0,fail=0;
+      // 新格式：{ barcodes: { barcode: { status, message, time } } }
+      if(r&&r.barcodes){
+        for(var k in r.barcodes){
+          if(submittedCodes.length>0&&submittedCodes.indexOf(k)===-1)continue;
+          var st=r.barcodes[k]?.status;
+          if(st==='success')success++;
+          else if(st==='noGoods')noGoods++;
+          else if(st==='fail')fail++;
+        }
+      }else if(r){
+        // 兼容旧格式：排除顶层字段
+        var skipKeys=['status','total','done','time'];
+        for(var k in r){
+          if(skipKeys.indexOf(k)!==-1)continue;
+          if(submittedCodes.length>0&&submittedCodes.indexOf(k)===-1)continue;
+          var st=r[k]?.status;
+          if(st==='success')success++;
+          else if(st==='noGoods')noGoods++;
+          else if(st==='fail')fail++;
+        }
+      }
+      $('s-s').textContent=success;
+      $('s-n').textContent=noGoods;
+      $('s-f').textContent=fail;
     }).catch(function(){});
   },3000);
 }
