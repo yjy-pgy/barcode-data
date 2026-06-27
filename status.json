@@ -1,1 +1,11 @@
-{"status":"pending","total":0,"done":0,"time":1782569890760}
+{
+  "status": "pending",
+  "total": 0,
+  "done": 0,
+  "time": 1782569890760,
+  "6903919184424": {
+    "status": "success",
+    "message": "处理成功",
+    "time": 1782578065007
+  }
+}
