@@ -121,10 +121,8 @@ function loadPend(){
     if(n>0)log('队列中有 '+n+' 个条码等待处理');
     else if(total>0){
       log('总任务 '+total+' 个，已处理 '+(total-n)+' 个');
-      // 全部跑完，清除保存的条码
-      if(n===0&&submittedCodes.length>0){
-        clearSubmitted();
-        submittedCodes=[];
+    // 全部跑完，不清除条码，保留状态显示
+      if(n===0&&submittedCodes.length>0&&total>0){
         $('inp').value='';
         toast('全部处理完成');
       }
@@ -137,6 +135,7 @@ function loadPend(){
     // 新格式：{ barcodes: { barcode: { status, message, time } } }
     if(r&&r.barcodes){
       for(var k in r.barcodes){
+        if(submittedCodes.length>0&&submittedCodes.indexOf(k)===-1)continue;
         var st=r.barcodes[k]?.status;
         if(st==='success')success++;
         else if(st==='noGoods')noGoods++;
@@ -147,6 +146,7 @@ function loadPend(){
       var skipKeys=['status','total','done','time'];
       for(var k in r){
         if(skipKeys.indexOf(k)!==-1)continue;
+        if(submittedCodes.length>0&&submittedCodes.indexOf(k)===-1)continue;
         var st=r[k]?.status;
         if(st==='success')success++;
         else if(st==='noGoods')noGoods++;
@@ -314,7 +314,6 @@ function startPoll(){
           clearInterval(pollTimer);pollTimer=null;
           $('pf').style.width='100%';
           $('pl').textContent='已完成 '+total+' 个';
-          $('s-s').textContent=total;
           $('s-r').textContent=0;
           log('全部处理完成');
           toast('处理完成');
@@ -323,8 +322,7 @@ function startPoll(){
           btn.textContent='开始更新';
           $('pw').style.display='none';
           isRunning=false;
-          clearSubmitted();
-          submittedCodes=[];
+          // 不清空 submittedCodes，保留状态显示
           saveTotal(0);total=0;
         }
       }else{
