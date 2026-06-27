@@ -12,15 +12,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .container{padding:16px;max-width:500px;margin:0 auto}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .card-title{font-size:14px;font-weight:600;color:#667eea;margin-bottom:12px}
-input,textarea{width:100%;padding:12px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;outline:none;transition:border-color .2s}
-input:focus,textarea:focus{border-color:#667eea}
+textarea,input{width:100%;padding:12px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:14px;outline:none;transition:border-color .2s;background:#fafafa}
+textarea:focus,input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.12)}
 textarea{resize:vertical;min-height:120px;font-family:monospace;line-height:1.6}
-.btn{width:100%;padding:12px;border:none;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;margin-top:10px;transition:opacity .2s}
+.btn{width:100%;padding:12px;border:none;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;margin-top:10px;transition:all .2s}
 .btn:active{opacity:.8}
 .btn-primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
+.btn-primary:hover{opacity:0.9;box-shadow:0 4px 12px rgba(102,126,234,0.4)}
+.btn-sm{background:#666;color:#fff;margin-top:8px;font-size:13px;padding:8px}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
 .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:999;display:none}
-#status{margin-top:8px;font-size:12px;color:#999;text-align:center}
-label{font-size:12px;color:#666;margin-bottom:4px;display:block}
+.progress-bar{width:100%;height:4px;background:#e8e8e8;border-radius:2px;margin-top:10px;overflow:hidden;display:none}
+.progress-bar-inner{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:2px;width:0%;transition:width .3s}
+.result-box{margin-top:12px;padding:12px;border-radius:10px;font-size:12px;display:none;line-height:1.8}
+.result-success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.result-error{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;margin-left:4px}
+.tag-new{background:#dbeafe;color:#2563eb}
+.tag-dup{background:#fef3c7;color:#d97706}
+label{font-size:12px;color:#888;margin-bottom:4px;display:block}
+.hint{font-size:11px;color:#bbb;margin-top:6px;text-align:center}
+.hidden{display:none!important}
 </style>
 </head>
 <body>
@@ -28,17 +40,19 @@ label{font-size:12px;color:#666;margin-bottom:4px;display:block}
   <h1>条码采集管理</h1>
 </div>
 <div class="container">
-  <div class="card">
+  <div class="card" id="config-card">
     <div class="card-title">配置 Token</div>
-    <label>GitHub Personal Access Token（首次使用需填写，会自动保存）</label>
+    <label>GitHub Personal Access Token</label>
     <input id="token-input" type="password" placeholder="ghp_xxxxxxxxxxxx">
-    <button class="btn btn-primary" onclick="saveToken()" style="background:#666;margin-top:8px">保存 Token</button>
+    <button class="btn btn-sm" onclick="saveToken()">保存 Token</button>
+    <div class="hint">首次使用需填写，之后自动保存</div>
   </div>
-  <div class="card">
+  <div class="card" id="main-card">
     <div class="card-title">导入条码</div>
     <textarea id="barcode-input" placeholder="每行一个条码&#10;6978xxxx50073&#10;6923xxxx01644&#10;6976xxxx75042"></textarea>
-    <button class="btn btn-primary" onclick="submitBarcodes()">提交条码</button>
-    <div id="status"></div>
+    <button id="submit-btn" class="btn btn-primary" onclick="submitBarcodes()">提交条码</button>
+    <div class="progress-bar" id="progress-bar"><div class="progress-bar-inner" id="progress-inner"></div></div>
+    <div class="result-box" id="result-box"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -48,21 +62,54 @@ var REPO = 'barcode-data';
 var FILE = 'barcodes.json';
 
 function getToken() { return localStorage.getItem('gh_token') || ''; }
+
 function saveToken() {
   var t = document.getElementById('token-input').value.trim();
   if (!t) return showToast('请输入 Token');
   localStorage.setItem('gh_token', t);
   showToast('Token 已保存');
+  checkToken();
 }
-function showToast(m,d){d=d||1500;var t=document.getElementById("toast");t.textContent=m;t.style.display="block";setTimeout(function(){t.style.display="none"},d)}
+
+function checkToken() {
+  var t = getToken();
+  if (t) {
+    document.getElementById('config-card').classList.add('hidden');
+  } else {
+    document.getElementById('config-card').classList.remove('hidden');
+  }
+}
+
+function showToast(m, d) {
+  d = d || 1500;
+  var t = document.getElementById("toast");
+  t.textContent = m;
+  t.style.display = "block";
+  setTimeout(function() { t.style.display = "none"; }, d);
+}
+
+function setProgress(pct) {
+  var bar = document.getElementById("progress-bar");
+  var inner = document.getElementById("progress-inner");
+  bar.style.display = "block";
+  inner.style.width = pct + "%";
+}
+
+function showResult(type, html) {
+  var box = document.getElementById("result-box");
+  box.className = "result-box " + (type === "success" ? "result-success" : "result-error");
+  box.innerHTML = html;
+  box.style.display = "block";
+}
 
 window.onload = function() {
   var saved = getToken();
   if (saved) document.getElementById('token-input').value = saved;
+  checkToken();
 };
 
 function getFile(token) {
-  return fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + FILE, {
+  return fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + FILE + '?t=' + Date.now(), {
     headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
   }).then(function(r) {
     if (r.status === 404) return { content: '[]', sha: null };
@@ -88,34 +135,53 @@ function saveFile(token, content, sha, message) {
 
 function submitBarcodes() {
   var token = getToken();
-  if (!token) return showToast('请先保存 Token');
+  if (!token) { showToast('请先配置 Token'); checkToken(); return; }
   var input = document.getElementById("barcode-input");
+  var btn = document.getElementById("submit-btn");
   var text = input.value.trim();
   if (!text) return showToast("请输入条码");
   var codes = text.split(/[\n,\s]+/).map(function(s) { return s.trim(); }).filter(Boolean);
   if (codes.length === 0) return showToast("请输入有效条码");
 
-  document.getElementById("status").textContent = "提交中...";
+  btn.disabled = true;
+  btn.textContent = "提交中...";
+  document.getElementById("result-box").style.display = "none";
+  setProgress(20);
+
   getFile(token).then(function(file) {
+    setProgress(50);
     var existing = [];
     try { existing = JSON.parse(decodeURIComponent(escape(atob(file.content)))); } catch(e) { existing = []; }
     if (!Array.isArray(existing)) existing = [];
     var newCodes = codes.filter(function(c) { return existing.indexOf(c) === -1; });
+    var dupCount = codes.length - newCodes.length;
     existing.push.apply(existing, newCodes);
     var content = JSON.stringify(existing, null, 2);
-    return saveFile(token, content, file.sha, '添加 ' + newCodes.length + ' 个条码');
-  }).then(function(result) {
-    if (result.content) {
-      showToast("已提交 " + codes.length + " 个条码");
+    setProgress(80);
+    return saveFile(token, content, file.sha, '添加 ' + newCodes.length + ' 个条码').then(function(result) {
+      return { result: result, newCount: newCodes.length, dupCount: dupCount, total: codes.length };
+    });
+  }).then(function(data) {
+    setProgress(100);
+    if (data.result.content) {
+      var html = '提交成功！共 ' + data.total + ' 个条码';
+      html += '<br><span class="tag tag-new">新增 ' + data.newCount + ' 个</span>';
+      if (data.dupCount > 0) html += ' <span class="tag tag-dup">重复 ' + data.dupCount + ' 个</span>';
+      showResult("success", html);
+      showToast("已提交 " + data.total + " 个条码");
       input.value = "";
-      document.getElementById("status").textContent = "提交成功";
     } else {
-      showToast("提交失败: " + (result.message || "未知错误"));
-      document.getElementById("status").textContent = "提交失败";
+      showResult("error", "提交失败: " + (data.result.message || "未知错误"));
+      showToast("提交失败");
     }
   }).catch(function(err) {
+    setProgress(100);
+    showResult("error", "提交失败: " + err.message);
     showToast("提交失败");
-    document.getElementById("status").textContent = err.message;
+  }).finally(function() {
+    btn.disabled = false;
+    btn.textContent = "提交条码";
+    setTimeout(function() { document.getElementById("progress-bar").style.display = "none"; }, 1000);
   });
 }
 </script>
