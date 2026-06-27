@@ -199,10 +199,19 @@ function startUpdate(){
   $('pl').textContent='等待扩展处理...';
   isRunning=true;
   log('等待扩展处理...');
-  // 通知扩展恢复 GitHub 轮询
-  try{
-    chrome.runtime.sendMessage({action:'resumeGithubPolling'},function(){});
-  }catch(e){}
+  // 通过 GitHub control.json 通知扩展恢复处理
+  api(C).then(function(f){
+    var content=btoa(unescape(encodeURIComponent(JSON.stringify({action:'resume',time:Date.now()}))));
+    if(f.sha){
+      return api(C,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Resume processing',content:content,sha:f.sha}});
+    }else{
+      return api(C,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Resume processing',content:content}});
+    }
+  }).catch(function(){
+    return api(C,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Resume processing',content:btoa(unescape(encodeURIComponent(JSON.stringify({action:'resume',time:Date.now()}))))}});
+  }).then(function(){
+    log('已通知扩展开始处理');
+  }).catch(function(){});
   loadPend();
   startPoll();
 }
