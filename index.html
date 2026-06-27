@@ -71,25 +71,18 @@ input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(102,126,234,.1
   <div class="sec-t">手动输入条形码（每行一个）</div>
   <textarea id="inp" rows="4" placeholder="6978xxxx50073&#10;6923xxxx01644&#10;6976xxxx75042"></textarea>
   <div class="brow">
-    <button id="sub-btn" class="btn bp" onclick="submit()">提交条码</button>
+    <button id="main-btn" class="btn bp" onclick="submit()">开始更新</button>
     <button class="btn bo" onclick="$('inp').value=''">清空</button>
   </div>
-  <div class="info" id="msg"></div>
-</div>
-
-<div class="sec" id="ctrl-sec" style="display:none">
-  <div class="brow">
-    <button id="start-btn" class="btn bp" onclick="startUpdate()">开始更新</button>
-    <button id="stop-btn" class="btn bstop" onclick="stopUpdate()" style="display:none">停止更新</button>
-  </div>
   <div class="pw" id="pw"><div class="pt"><div class="pf" id="pf"></div></div><div class="pl" id="pl">等待开始...</div></div>
+  <div class="info" id="msg"></div>
 </div>
 
 <div class="tst" id="tst"></div>
 
 <script>
 var O='yjy-pgy',R='barcode-data',F='barcodes.json';
-var pollTimer=null,total=0,done=0,lastStatus='';
+var pollTimer=null,total=0,done=0,isRunning=false;
 
 function $(i){return document.getElementById(i)}
 function tk(){return localStorage.getItem('gh_token')||''}
@@ -109,49 +102,52 @@ function loadPend(){
     $('s-r').textContent=n;
     $('s-t').textContent=n;
     $('s-s').textContent=0;
-    if(n>0){
-      $('ctrl-sec').style.display='block';
-      $('start-btn').style.display='flex';
-      $('stop-btn').style.display='none';
-      $('pw').style.display='none';
-      log('队列中有 '+n+' 个条码等待处理');
-      total=n;done=0;
-    }else{
-      $('ctrl-sec').style.display='none';
-      log('队列已清空');
-    }
+    if(n>0)log('队列中有 '+n+' 个条码等待处理');
+    total=n;done=0;
   }).catch(function(){})
 }
 
 function submit(){
+  if(isRunning){
+    stopUpdate();
+    return;
+  }
+  
   var t=tk();if(!t){toast('请先配置Token');chk();return}
-  var inp=$('inp'),btn=$('sub-btn'),txt=inp.value.trim();
-  if(!txt)return toast('请输入条码');
-  var codes=[...new Set(txt.split(/[\n,\s]+/).map(function(s){return s.trim()}).filter(Boolean))];
-  if(!codes.length)return toast('请输入有效条码');
-  btn.disabled=true;btn.textContent='提交中...';$('msg').style.display='none';
-  api(F).then(function(f){
-    var ex=parse(f.content);if(!Array.isArray(ex))ex=[];
-    var nc=codes.filter(function(c){return ex.indexOf(c)===-1});
-    var dc=codes.length-nc.length;
-    ex.push.apply(ex,nc);
-    return api(F,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'添加 '+nc.length+' 个条码',content:btoa(unescape(encodeURIComponent(JSON.stringify(ex,null,2)))),sha:f.sha}}).then(function(r){return{r:r,n:nc.length,d:dc,t:codes.length}});
-  }).then(function(d){
-    if(d.r.content){
-      var m='提交成功！共 '+d.t+' 个条码';if(d.n>0)m+=' | 新增 '+d.n;if(d.d>0)m+=' | 重复 '+d.d;
-      msg(m,true);log('已提交 '+d.t+' 个条码（新增 '+d.n+'，重复 '+d.d+'）');toast('已提交 '+d.t+' 个条码');
-      inp.value='';loadPend();
-    }else{msg('提交失败: '+(d.r.message||'未知错误'),false);log('提交失败')}
-  }).catch(function(e){msg('提交失败: '+e.message,false);log('提交失败: '+e.message)}).finally(function(){btn.disabled=false;btn.textContent='提交条码'})
+  var inp=$('inp'),btn=$('main-btn'),txt=inp.value.trim();
+  
+  // 如果有输入条码，先提交到 barcodes.json
+  if(txt){
+    var codes=[...new Set(txt.split(/[\n,\s]+/).map(function(s){return s.trim()}).filter(Boolean))];
+    if(!codes.length)return toast('请输入有效条码');
+    btn.disabled=true;btn.textContent='提交中...';$('msg').style.display='none';
+    api(F).then(function(f){
+      var ex=parse(f.content);if(!Array.isArray(ex))ex=[];
+      var nc=codes.filter(function(c){return ex.indexOf(c)===-1});
+      ex.push.apply(ex,nc);
+      return api(F,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'添加 '+nc.length+' 个条码',content:btoa(unescape(encodeURIComponent(JSON.stringify(ex,null,2)))),sha:f.sha}}).then(function(r){return{r:r,n:nc.length,t:codes.length}});
+    }).then(function(d){
+      if(d.r.content){
+        msg('已提交 '+d.t+' 个条码',true);log('已提交 '+d.t+' 个条码');
+        inp.value='';
+        startUpdate();
+      }else{msg('提交失败',false);btn.disabled=false;btn.textContent='开始更新'}
+    }).catch(function(e){msg('提交失败: '+e.message,false);btn.disabled=false;btn.textContent='开始更新'})
+  }else{
+    startUpdate();
+  }
 }
 
 function startUpdate(){
   var t=tk();if(!t){toast('请先配置Token');return}
-  $('start-btn').style.display='none';
-  $('stop-btn').style.display='flex';
+  var btn=$('main-btn');
+  btn.className='btn bstop';
+  btn.textContent='停止更新';
+  btn.disabled=false;
   $('pw').style.display='block';
   $('pf').style.width='0%';
   $('pl').textContent='正在启动...';
+  isRunning=true;
   log('发送开始更新命令...');
   
   // 写 command.json 触发扩展开始处理
@@ -159,16 +155,19 @@ function startUpdate(){
     var sha=f.sha||null;
     return api('command.json',{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Start update',content:btoa(unescape(encodeURIComponent(JSON.stringify({action:'start',time:Date.now()})))),sha:sha}});
   }).then(function(){
-    log('已发送开始更新命令');
+    log('已发送开始更新命令，等待处理...');
+    loadPend();
     startPoll();
-  }).catch(function(e){msg('发送失败: '+e.message,false);$('start-btn').style.display='flex';$('stop-btn').style.display='none'})
+  }).catch(function(e){msg('发送失败: '+e.message,false);stopUpdate()})
 }
 
 function stopUpdate(){
   if(pollTimer){clearInterval(pollTimer);pollTimer=null;}
-  $('start-btn').style.display='flex';
-  $('stop-btn').style.display='none';
+  var btn=$('main-btn');
+  btn.className='btn bp';
+  btn.textContent='开始更新';
   $('pw').style.display='none';
+  isRunning=false;
   log('已停止轮询');
   toast('已停止');
 }
@@ -182,7 +181,6 @@ function startPoll(){
       if(!d)return;
       total=d.total||total;
       done=d.done||0;
-      var st=d.status||'';
       $('s-t').textContent=total;
       $('s-s').textContent=done;
       $('s-r').textContent=Math.max(0,total-done);
@@ -191,22 +189,20 @@ function startPoll(){
         $('pf').style.width=pct+'%';
         $('pl').textContent='已完成 '+done+'/'+total+' ('+pct+'%)';
       }
-      if(st==='processing'){
+      if(d.status==='processing'){
         log('处理中... ('+done+'/'+total+')');
-        lastStatus='processing';
       }
-      if(st==='done'||st==='complete'){
+      if(d.status==='done'||d.status==='complete'){
         clearInterval(pollTimer);pollTimer=null;
         $('pf').style.width='100%';
         $('pl').textContent='已完成 '+total+' 个';
         log('全部处理完成');
         toast('处理完成');
-        $('start-btn').style.display='flex';
-        $('stop-btn').style.display='none';
+        stopUpdate();
         setTimeout(loadPend,2000);
       }
     }).catch(function(){});
-  },3000);
+  },2000);
 }
 
 window.onload=function(){
