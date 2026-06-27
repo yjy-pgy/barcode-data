@@ -28,29 +28,15 @@ input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(102,126,234,.1
 .btn{flex:1;padding:7px 0;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:all .12s}
 .btn:active{opacity:.8;transform:scale(.98)}
 .bp{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff}
+.bstop{background:linear-gradient(135deg,#ff6b6b,#ee5a5a);color:#fff}
 .bo{border:1px solid var(--err);background:var(--card);color:var(--err)}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .info{margin-top:8px;font-size:12px;display:none}
 .iok{color:var(--ok)}.ier{color:var(--err)}
 .pw{margin-top:8px;display:none}
-.pt{width:100%;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
-.pf{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:2px;width:30%;animation:sl 1.2s ease-in-out infinite}
-@keyframes sl{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
+.pt{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:3px;width:0%;transition:width .3s}
 .pl{font-size:11px;color:var(--sub);margin-top:4px;text-align:center}
-.th{padding:10px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border2)}
-.th span{font-size:12px;color:#666}
-.th button{padding:4px 12px;border:1px solid var(--err);border-radius:4px;background:var(--card);color:var(--err);cursor:pointer;font-size:12px}
-.tw{overflow:auto;border-bottom:1px solid var(--border2);max-height:50vh}
-table{width:100%;border-collapse:collapse;font-size:12px}
-thead{position:sticky;top:0;z-index:1}
-thead tr{background:var(--stats-bg)}
-th{padding:8px 6px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:500}
-td{padding:8px 6px;white-space:nowrap;border-bottom:1px solid var(--border2)}
-.td-n{max-width:120px;overflow:hidden;text-overflow:ellipsis}
-.td-c{max-width:70px;overflow:hidden;text-overflow:ellipsis}
-.td-s{color:var(--ok);position:sticky;right:0;background:var(--card);box-shadow:-2px 0 4px rgba(0,0,0,.06);max-width:80px;overflow:hidden;text-overflow:ellipsis}
-.td-s.fail{color:var(--err)}.td-s.ng{color:var(--grey)}
-.emp{text-align:center;padding:20px;color:var(--sub)}
 .tk{padding:16px 18px;border-bottom:1px solid var(--border2)}
 .tk label{font-size:12px;color:var(--sub);margin-bottom:6px;display:block}
 .tr{display:flex;gap:8px;align-items:center}
@@ -58,12 +44,6 @@ td{padding:8px 6px;white-space:nowrap;border-bottom:1px solid var(--border2)}
 .tr .btn{flex:0 0 auto;padding:7px 16px}
 .hint{font-size:11px;color:var(--sub);margin-top:6px;text-align:center}
 .hd{display:none!important}
-.hi{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border2)}
-.hi:last-child{border-bottom:none}
-.hl .hc{font-size:13px;color:var(--text)}.hl .ht{font-size:11px;color:var(--sub);margin-top:2px}
-.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500}
-.tg{background:rgba(102,126,234,.1);color:var(--primary)}
-.td{background:rgba(245,87,108,.1);color:var(--err)}
 .tst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:#fff;padding:12px 28px;border-radius:10px;font-size:14px;z-index:999;display:none;backdrop-filter:blur(4px)}
 </style>
 </head>
@@ -73,10 +53,8 @@ td{padding:8px 6px;white-space:nowrap;border-bottom:1px solid var(--border2)}
 
 <div class="stats">
   <i class="st">总任务: <b id="s-t">0</b></i>
-  <i class="ss">成功: <b id="s-s">0</b></i>
+  <i class="ss">已完成: <b id="s-s">0</b></i>
   <i class="sr">待处理: <b id="s-r">0</b></i>
-  <i class="sn">无商品: <b id="s-n">0</b></i>
-  <i class="sf">失败: <b id="s-f">0</b></i>
 </div>
 <div class="log" id="log">等待操作...</div>
 
@@ -94,30 +72,24 @@ td{padding:8px 6px;white-space:nowrap;border-bottom:1px solid var(--border2)}
   <textarea id="inp" rows="4" placeholder="6978xxxx50073&#10;6923xxxx01644&#10;6976xxxx75042"></textarea>
   <div class="brow">
     <button id="sub-btn" class="btn bp" onclick="submit()">提交条码</button>
-    <button class="btn bo" onclick="$('inp').value=''">清空条码</button>
+    <button class="btn bo" onclick="$('inp').value=''">清空</button>
   </div>
-  <div class="pw" id="pw"><div class="pt"><div class="pf"></div></div><div class="pl" id="pl">提交中...</div></div>
   <div class="info" id="msg"></div>
 </div>
 
-<div class="th"><span>采集结果 <b id="tc">0</b> 条</span><button onclick="clr()">清空数据</button></div>
-<div class="tw">
-  <table>
-    <thead><tr><th style="width:140px">商品名称</th><th>条形码</th><th style="width:80px">商品类目</th><th>规格</th><th style="position:sticky;right:0;background:var(--stats-bg);box-shadow:-2px 0 4px rgba(0,0,0,.06)">备注</th></tr></thead>
-    <tbody id="tb"><tr><td colspan="5" class="emp">暂无数据</td></tr></tbody>
-  </table>
-</div>
-
-<div class="sec">
-  <div class="sec-t" style="margin-bottom:8px">提交历史</div>
-  <div id="hl"><div class="emp">暂无记录</div></div>
+<div class="sec" id="ctrl-sec" style="display:none">
+  <div class="brow">
+    <button id="start-btn" class="btn bp" onclick="startUpdate()">开始更新</button>
+    <button id="stop-btn" class="btn bstop" onclick="stopUpdate()" style="display:none">停止更新</button>
+  </div>
+  <div class="pw" id="pw"><div class="pt"><div class="pf" id="pf"></div></div><div class="pl" id="pl">等待开始...</div></div>
 </div>
 
 <div class="tst" id="tst"></div>
 
 <script>
 var O='yjy-pgy',R='barcode-data',F='barcodes.json';
-var results=[];
+var pollTimer=null,total=0,done=0,lastStatus='';
 
 function $(i){return document.getElementById(i)}
 function tk(){return localStorage.getItem('gh_token')||''}
@@ -126,20 +98,29 @@ function chk(){var t=tk();$('tk-sec').classList[t?'add':'remove']('hd');if(t)loa
 function toast(m,d){d=d||1500;var t=$('tst');t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},d)}
 function log(m){$('log').textContent='['+new Date().toLocaleTimeString()+'] '+m}
 function msg(m,ok){var e=$('msg');e.style.display='block';e.textContent=m;e.className='info '+(ok?'iok':'ier');setTimeout(function(){e.style.display='none'},4000)}
-function prog(s,t){$('pw').style.display=s?'block':'none';if(t)$('pl').textContent=t}
 
-function api(p,o){var h={'Accept':'application/vnd.github.v3+json'},t=tk();if(t)h['Authorization']='token '+t;if(o&&o.h)for(var k in o.h)h[k]=o.h[k];return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?t='+Date.now(),{method:(o&&o.m)||'GET',headers:h,body:o&&o.b?JSON.stringify(o.b):undefined}).then(function(r){return r.json()})}
-function getF(){return api(F).then(function(r){if(r.message==='Not Found')return{content:'[]',sha:null};return r})}
-function putF(c,s,m){var t=tk();return api(F,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:m,content:btoa(unescape(encodeURIComponent(c))),sha:s}})}
-function parse(c){if(!c)return[];try{return JSON.parse(decodeURIComponent(escape(atob(c))))}catch(e){return[]}}
+function api(p,o){var h={'Accept':'application/vnd.github.v3+json'},t=tk();if(t)h['Authorization']='token '+t;return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?v='+Date.now(),{method:(o&&o.m)||'GET',headers:h,body:o&&o.b?JSON.stringify(o.b):undefined}).then(function(r){return r.json()})}
+function parse(c){if(!c)return null;try{return JSON.parse(decodeURIComponent(escape(atob(c))))}catch(e){return null}}
 
-function loadPend(){getF().then(function(f){var a=parse(f.content);var n=Array.isArray(a)?a.length:0;$('s-r').textContent=n;if(n>0)log('队列中有 '+n+' 个条码等待处理')}).catch(function(){})}
-
-function updateStats(){
-  var s=results.filter(function(r){return r.status==='success'}).length;
-  var f=results.filter(function(r){return r.status==='fail'}).length;
-  var n=results.filter(function(r){return r.status==='noGoods'}).length;
-  $('s-t').textContent=results.length;$('s-s').textContent=s;$('s-f').textContent=f;$('s-n').textContent=n;$('tc').textContent=results.length;
+function loadPend(){
+  api(F).then(function(f){
+    var a=parse(f.content);
+    var n=Array.isArray(a)?a.length:0;
+    $('s-r').textContent=n;
+    $('s-t').textContent=n;
+    $('s-s').textContent=0;
+    if(n>0){
+      $('ctrl-sec').style.display='block';
+      $('start-btn').style.display='flex';
+      $('stop-btn').style.display='none';
+      $('pw').style.display='none';
+      log('队列中有 '+n+' 个条码等待处理');
+      total=n;done=0;
+    }else{
+      $('ctrl-sec').style.display='none';
+      log('队列已清空');
+    }
+  }).catch(function(){})
 }
 
 function submit(){
@@ -148,63 +129,89 @@ function submit(){
   if(!txt)return toast('请输入条码');
   var codes=[...new Set(txt.split(/[\n,\s]+/).map(function(s){return s.trim()}).filter(Boolean))];
   if(!codes.length)return toast('请输入有效条码');
-  btn.disabled=true;btn.textContent='提交中...';$('msg').style.display='none';prog(true,'正在读取远程数据...');
-  getF().then(function(f){
-    prog(true,'正在合并条码...');
+  btn.disabled=true;btn.textContent='提交中...';$('msg').style.display='none';
+  api(F).then(function(f){
     var ex=parse(f.content);if(!Array.isArray(ex))ex=[];
     var nc=codes.filter(function(c){return ex.indexOf(c)===-1});
     var dc=codes.length-nc.length;
     ex.push.apply(ex,nc);
-    prog(true,'正在提交到 GitHub...');
-    return putF(JSON.stringify(ex,null,2),f.sha,'添加 '+nc.length+' 个条码').then(function(r){return{r:r,n:nc.length,d:dc,t:codes.length}});
+    return api(F,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'添加 '+nc.length+' 个条码',content:btoa(unescape(encodeURIComponent(JSON.stringify(ex,null,2)))),sha:f.sha}}).then(function(r){return{r:r,n:nc.length,d:dc,t:codes.length}});
   }).then(function(d){
-    prog(false);
     if(d.r.content){
       var m='提交成功！共 '+d.t+' 个条码';if(d.n>0)m+=' | 新增 '+d.n;if(d.d>0)m+=' | 重复 '+d.d;
       msg(m,true);log('已提交 '+d.t+' 个条码（新增 '+d.n+'，重复 '+d.d+'）');toast('已提交 '+d.t+' 个条码');
-      inp.value='';saveH({c:d.t,n:d.n,d:d.d,time:new Date().toLocaleString('zh-CN')});loadPend();
+      inp.value='';loadPend();
     }else{msg('提交失败: '+(d.r.message||'未知错误'),false);log('提交失败')}
-  }).catch(function(e){prog(false);msg('提交失败: '+e.message,false);log('提交失败: '+e.message)}).finally(function(){btn.disabled=false;btn.textContent='提交条码'})
+  }).catch(function(e){msg('提交失败: '+e.message,false);log('提交失败: '+e.message)}).finally(function(){btn.disabled=false;btn.textContent='提交条码'})
 }
 
-function readResults(){
-  api('results.json').then(function(f){
-    if(!f.content)return;
-    var r=parse(f.content);
-    if(Array.isArray(r)&&r.length>0){
-      results=r;renderTB();updateStats();
-      var sc=results.filter(function(x){return x.status==='success'}).length;
-      var fc=results.filter(function(x){return x.status==='fail'}).length;
-      var nc=results.filter(function(x){return x.status==='noGoods'}).length;
-      log('已同步 '+results.length+' 条结果（成功 '+sc+'，失败 '+fc+'，无商品 '+nc+'）');
-    }
-  }).catch(function(){})
+function startUpdate(){
+  var t=tk();if(!t){toast('请先配置Token');return}
+  $('start-btn').style.display='none';
+  $('stop-btn').style.display='flex';
+  $('pw').style.display='block';
+  $('pf').style.width='0%';
+  $('pl').textContent='正在启动...';
+  log('发送开始更新命令...');
+  
+  // 写 command.json 触发扩展开始处理
+  api('command.json').then(function(f){
+    var sha=f.sha||null;
+    return api('command.json',{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Start update',content:btoa(unescape(encodeURIComponent(JSON.stringify({action:'start',time:Date.now()})))),sha:sha}});
+  }).then(function(){
+    log('已发送开始更新命令');
+    startPoll();
+  }).catch(function(e){msg('发送失败: '+e.message,false);$('start-btn').style.display='flex';$('stop-btn').style.display='none'})
 }
 
-function renderTB(){
-  var tb=$('tb');$('tc').textContent=results.length;
-  if(!results.length){tb.innerHTML='<tr><td colspan="5" class="emp">暂无数据</td></tr>';return}
-  tb.innerHTML=results.slice().reverse().map(function(r){
-    var c=r.status==='success'?'var(--ok)':r.status==='noGoods'?'var(--grey)':'var(--err)';
-    var l=r.status==='success'?'成功':r.status==='noGoods'?'无商品':r.message||'失败';
-    var sc=r.status==='fail'?' fail':r.status==='noGoods'?' ng':'';
-    return'<tr><td class="td-n" title="'+(r.name||'-').replace(/"/g,'&quot;')+'">'+(r.name||'-')+'</td><td style="font-family:monospace">'+(r.barCode||'-')+'</td><td class="td-c" title="'+(r.category||'-').replace(/"/g,'&quot;')+'">'+(r.category||'-')+'</td><td>'+(r.spec||'-')+'</td><td class="td-s'+sc+'">'+l+'</td></tr>'
-  }).join('')
+function stopUpdate(){
+  if(pollTimer){clearInterval(pollTimer);pollTimer=null;}
+  $('start-btn').style.display='flex';
+  $('stop-btn').style.display='none';
+  $('pw').style.display='none';
+  log('已停止轮询');
+  toast('已停止');
 }
 
-function clr(){
-  results=[];renderTB();updateStats();$('s-t').textContent='0';$('s-s').textContent='0';$('s-r').textContent='0';$('s-n').textContent='0';$('s-f').textContent='0';
-  log('数据已清空')
+function startPoll(){
+  if(pollTimer)return;
+  pollTimer=setInterval(function(){
+    api('status.json').then(function(f){
+      if(!f.content)return;
+      var d=parse(f.content);
+      if(!d)return;
+      total=d.total||total;
+      done=d.done||0;
+      var st=d.status||'';
+      $('s-t').textContent=total;
+      $('s-s').textContent=done;
+      $('s-r').textContent=Math.max(0,total-done);
+      if(total>0){
+        var pct=Math.round(done/total*100);
+        $('pf').style.width=pct+'%';
+        $('pl').textContent='已完成 '+done+'/'+total+' ('+pct+'%)';
+      }
+      if(st==='processing'){
+        log('处理中... ('+done+'/'+total+')');
+        lastStatus='processing';
+      }
+      if(st==='done'||st==='complete'){
+        clearInterval(pollTimer);pollTimer=null;
+        $('pf').style.width='100%';
+        $('pl').textContent='已完成 '+total+' 个';
+        log('全部处理完成');
+        toast('处理完成');
+        $('start-btn').style.display='flex';
+        $('stop-btn').style.display='none';
+        setTimeout(loadPend,2000);
+      }
+    }).catch(function(){});
+  },3000);
 }
 
 window.onload=function(){
-  var s=tk();if(s)$('tk-in').value=s;chk();renderH();
-  try{var r=localStorage.getItem('gh_r');if(r)results=JSON.parse(r)}catch(e){}
-  renderTB();updateStats();readResults();
+  var s=tk();if(s)$('tk-in').value=s;chk();
 }
-function loadH(){try{return JSON.parse(localStorage.getItem('gh_h')||'[]')}catch(e){return[]}}
-function saveH(i){var h=loadH();h.unshift(i);if(h.length>20)h=h.slice(0,20);localStorage.setItem('gh_h',JSON.stringify(h));renderH()}
-function renderH(){var h=loadH(),el=$('hl');if(!h.length){el.innerHTML='<div class="emp">暂无记录</div>';return}el.innerHTML=h.map(function(i){return'<div class="hi"><div class="hl"><div class="hc">'+i.c+' 个条码</div><div class="ht">'+i.time+'</div></div><div><span class="tag tg">新增 '+i.n+'</span>'+(i.d>0?' <span class="tag td">重复 '+i.d+'</span>':'')+'</div></div>'}).join('')}
 </script>
 </body>
 </html>
