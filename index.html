@@ -28,7 +28,6 @@ input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(102,126,234,.1
 .btn{flex:1;padding:7px 0;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:all .12s}
 .btn:active{opacity:.8;transform:scale(.98)}
 .bp{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff}
-.bstop{background:linear-gradient(135deg,#ff6b6b,#ee5a5a);color:#fff}
 .bo{border:1px solid var(--err);background:var(--card);color:var(--err)}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .info{margin-top:8px;font-size:12px;display:none}
@@ -95,7 +94,6 @@ td{padding:8px 6px;white-space:nowrap;border-bottom:1px solid var(--border2)}
   <textarea id="inp" rows="4" placeholder="6978xxxx50073&#10;6923xxxx01644&#10;6976xxxx75042"></textarea>
   <div class="brow">
     <button id="sub-btn" class="btn bp" onclick="submit()">提交条码</button>
-    <button id="stop-btn" class="btn bstop" onclick="stopPoll()" style="display:none">停止采集</button>
     <button class="btn bo" onclick="$('inp').value=''">清空条码</button>
   </div>
   <div class="pw" id="pw"><div class="pt"><div class="pf"></div></div><div class="pl" id="pl">提交中...</div></div>
@@ -119,7 +117,6 @@ td{padding:8px 6px;white-space:nowrap;border-bottom:1px solid var(--border2)}
 
 <script>
 var O='yjy-pgy',R='barcode-data',F='barcodes.json';
-var pt=null,psc=0,subTotal=0;
 var results=[];
 
 function $(i){return document.getElementById(i)}
@@ -130,7 +127,6 @@ function toast(m,d){d=d||1500;var t=$('tst');t.textContent=m;t.style.display='bl
 function log(m){$('log').textContent='['+new Date().toLocaleTimeString()+'] '+m}
 function msg(m,ok){var e=$('msg');e.style.display='block';e.textContent=m;e.className='info '+(ok?'iok':'ier');setTimeout(function(){e.style.display='none'},4000)}
 function prog(s,t){$('pw').style.display=s?'block':'none';if(t)$('pl').textContent=t}
-function setStopBtn(show){$('stop-btn').style.display=show?'flex':'none'}
 
 function api(p,o){var h={'Accept':'application/vnd.github.v3+json'},t=tk();if(t)h['Authorization']='token '+t;if(o&&o.h)for(var k in o.h)h[k]=o.h[k];return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?t='+Date.now(),{method:(o&&o.m)||'GET',headers:h,body:o&&o.b?JSON.stringify(o.b):undefined}).then(function(r){return r.json()})}
 function getF(){return api(F).then(function(r){if(r.message==='Not Found')return{content:'[]',sha:null};return r})}
@@ -164,16 +160,11 @@ function submit(){
   }).then(function(d){
     prog(false);
     if(d.r.content){
-      subTotal=d.n;
       var m='提交成功！共 '+d.t+' 个条码';if(d.n>0)m+=' | 新增 '+d.n;if(d.d>0)m+=' | 重复 '+d.d;
       msg(m,true);log('已提交 '+d.t+' 个条码（新增 '+d.n+'，重复 '+d.d+'）');toast('已提交 '+d.t+' 个条码');
-      inp.value='';saveH({c:d.t,n:d.n,d:d.d,time:new Date().toLocaleString('zh-CN')});startPoll();loadPend();
+      inp.value='';saveH({c:d.t,n:d.n,d:d.d,time:new Date().toLocaleString('zh-CN')});loadPend();
     }else{msg('提交失败: '+(d.r.message||'未知错误'),false);log('提交失败')}
   }).catch(function(e){prog(false);msg('提交失败: '+e.message,false);log('提交失败: '+e.message)}).finally(function(){btn.disabled=false;btn.textContent='提交条码'})
-}
-
-function stopPoll(){
-  if(pt){clearInterval(pt);pt=null;setStopBtn(false);log('已停止轮询');toast('已停止')}
 }
 
 function readResults(){
@@ -188,43 +179,6 @@ function readResults(){
       log('已同步 '+results.length+' 条结果（成功 '+sc+'，失败 '+fc+'，无商品 '+nc+'）');
     }
   }).catch(function(){})
-}
-
-function startPoll(){
-  if(pt)return;
-  setStopBtn(true);
-  $('s-s').textContent='0';$('s-r').textContent=subTotal||0;
-  log('等待扩展处理...');
-  var st=Date.now(),done=false,resultRetry=0;
-  pt=setInterval(function(){
-    if(!tk()){stopPoll();return}
-    api('status.json').then(function(f){
-      if(!f.content)return;
-      var d=parse(f.content);
-      if(!d||!d.status)return;
-      if(d.total>0){$('s-t').textContent=d.total;$('s-s').textContent=d.done||0;$('s-r').textContent=Math.max(0,(d.total||0)-(d.done||0))}
-      if(d.status==='processing'){
-        var rem=Math.max(0,(d.total||0)-(d.done||0));
-        $('s-r').textContent=rem;
-        log('采集中（已完成 '+d.done+'/'+d.total+'，剩余 '+rem+'）');
-        done=true;
-      }
-      if(d.status==='done'){
-        $('s-s').textContent=d.total||subTotal;$('s-r').textContent=0;
-        log('全部处理完成，共 '+(d.total||subTotal)+' 个条码');
-        done=true;
-        resultRetry++;
-        if(resultRetry<=20){
-          readResults();
-        }else{
-          clearInterval(pt);pt=null;
-          setStopBtn(false);
-          toast('处理完成');
-        }
-      }
-    }).catch(function(){});
-    if(Date.now()-st>600000){clearInterval(pt);pt=null;log('轮询超时（10分钟）');setStopBtn(false)}
-  },3000)
 }
 
 function renderTB(){
@@ -246,7 +200,7 @@ function clr(){
 window.onload=function(){
   var s=tk();if(s)$('tk-in').value=s;chk();renderH();
   try{var r=localStorage.getItem('gh_r');if(r)results=JSON.parse(r)}catch(e){}
-  renderTB();updateStats()
+  renderTB();updateStats();readResults();
 }
 function loadH(){try{return JSON.parse(localStorage.getItem('gh_h')||'[]')}catch(e){return[]}}
 function saveH(i){var h=loadH();h.unshift(i);if(h.length>20)h=h.slice(0,20);localStorage.setItem('gh_h',JSON.stringify(h));renderH()}
