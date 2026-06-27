@@ -160,7 +160,10 @@ function startUpdate(){
     return api('status.json',{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Create status',content:btoa(unescape(encodeURIComponent(JSON.stringify({status:'pending',total:0,done:0,time:Date.now()}))))}});
   }).then(function(){
     // 写 command.json 触发扩展开始处理
-    return api('command.json');
+    return api('command.json').catch(function(){
+      // command.json 不存在，返回空对象
+      return {sha:null};
+    });
   }).then(function(f){
     var sha=f.sha||null;
     return api('command.json',{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Start update',content:btoa(unescape(encodeURIComponent(JSON.stringify({action:'start',time:Date.now()})))),sha:sha}});
