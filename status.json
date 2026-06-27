@@ -1,9 +1,9 @@
 {
   "barcodes": {
     "6903919184424": {
-      "status": "success",
-      "message": "处理成功",
-      "time": 1782578774480
+      "status": "fail",
+      "message": "操作超时",
+      "time": 1782579677001
     },
     "6951024317954": {
       "status": "success",
