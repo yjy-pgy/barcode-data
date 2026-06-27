@@ -1,31 +1,9 @@
 {
-  "status": "pending",
-  "total": 0,
-  "done": 0,
-  "time": 1782569890760,
-  "6903919184424": {
-    "status": "success",
-    "message": "处理成功",
-    "time": 1782578293249
-  },
-  "6951024317954": {
-    "status": "success",
-    "message": "处理成功",
-    "time": 1782578303495
-  },
-  "6971513684275": {
-    "status": "success",
-    "message": "处理成功",
-    "time": 1782578313400
-  },
-  "6924168200017": {
-    "status": "success",
-    "message": "处理成功",
-    "time": 1782578323523
-  },
-  "6920190330548": {
-    "status": "success",
-    "message": "处理成功",
-    "time": 1782578265897
+  "barcodes": {
+    "6903919184424": {
+      "status": "success",
+      "message": "处理成功",
+      "time": 1782578774480
+    }
   }
 }
