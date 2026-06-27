@@ -153,10 +153,15 @@ function loadPend(){
         else if(st==='fail')fail++;
       }
     }
+    // 缓存到 localStorage，防止刷新丢失
+    localStorage.setItem('gh_status',JSON.stringify({s:success,n:noGoods,f:fail,t:Date.now()}));
     $('s-s').textContent=success;
     $('s-n').textContent=noGoods;
     $('s-f').textContent=fail;
-  }).catch(function(){});
+  }).catch(function(){
+    // GitHub 读取失败，从 localStorage 恢复
+    try{var c=JSON.parse(localStorage.getItem('gh_status'));if(c){$('s-s').textContent=c.s||0;$('s-n').textContent=c.n||0;$('s-f').textContent=c.f||0;}}catch(e){}
+  });
 }
 
 function submit(){
@@ -351,10 +356,14 @@ function startPoll(){
           else if(st==='fail')fail++;
         }
       }
+      // 缓存到 localStorage
+      localStorage.setItem('gh_status',JSON.stringify({s:success,n:noGoods,f:fail,t:Date.now()}));
       $('s-s').textContent=success;
       $('s-n').textContent=noGoods;
       $('s-f').textContent=fail;
-    }).catch(function(){});
+    }).catch(function(){
+      try{var c=JSON.parse(localStorage.getItem('gh_status'));if(c){$('s-s').textContent=c.s||0;$('s-n').textContent=c.n||0;$('s-f').textContent=c.f||0;}}catch(e){}
+    });
   },3000);
 }
 
