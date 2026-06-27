@@ -199,6 +199,10 @@ function startUpdate(){
   $('pl').textContent='等待扩展处理...';
   isRunning=true;
   log('等待扩展处理...');
+  // 通知扩展恢复 GitHub 轮询
+  try{
+    chrome.runtime.sendMessage({action:'resumeGithubPolling'},function(){});
+  }catch(e){}
   loadPend();
   startPoll();
 }
