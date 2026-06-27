@@ -99,7 +99,7 @@ function toast(m,d){d=d||1500;var t=$('tst');t.textContent=m;t.style.display='bl
 function log(m){$('log').textContent='['+new Date().toLocaleTimeString()+'] '+m}
 function msg(m,ok){var e=$('msg');e.style.display='block';e.textContent=m;e.className='info '+(ok?'iok':'ier');setTimeout(function(){e.style.display='none'},4000)}
 
-function api(p,o){var h={'Accept':'application/vnd.github.v3+json'},t=tk();if(t)h['Authorization']='token '+t;return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?v='+Date.now(),{method:(o&&o.m)||'GET',headers:h,body:o&&o.b?JSON.stringify(o.b):undefined}).then(function(r){return r.json()})}
+function api(p,o){var h={'Accept':'application/vnd.github.v3+json'},t=tk();if(t)h['Authorization']='token '+t;if(o&&o.h)for(var k in o.h)h[k]=o.h[k];return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?v='+Date.now(),{method:(o&&o.m)||'GET',headers:h,body:o&&o.b?JSON.stringify(o.b):undefined}).then(function(r){return r.json()})}
 function parse(c){if(!c)return null;try{return JSON.parse(decodeURIComponent(escape(atob(c))))}catch(e){return null}}
 
 function loadPend(){
