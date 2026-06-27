@@ -6,9 +6,9 @@
       "time": 1782588473654
     },
     "6971513684275": {
-      "status": "success",
-      "message": "处理成功",
-      "time": 1782588482997
+      "status": "fail",
+      "message": "通道错误",
+      "time": 1782591044522
     },
     "6924168200017": {
       "status": "success",
