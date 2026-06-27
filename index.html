@@ -208,17 +208,19 @@ function startPoll(){
         }
         log('处理中... ('+done+'/'+total+')');
       }else if(d.status==='done'||d.status==='complete'){
-        if(lastStatus==='processing'){
-          clearInterval(pollTimer);pollTimer=null;
-          $('pf').style.width='100%';
-          $('pl').textContent='已完成 '+total+' 个';
-          $('s-s').textContent=total;
-          $('s-r').textContent=0;
-          log('全部处理完成');
-          toast('处理完成');
-          stopUpdate();
-          setTimeout(loadPend,2000);
-        }
+        clearInterval(pollTimer);pollTimer=null;
+        $('pf').style.width='100%';
+        $('pl').textContent='已完成 '+total+' 个';
+        $('s-s').textContent=total;
+        $('s-r').textContent=0;
+        log('全部处理完成 ('+total+'个)');
+        toast('处理完成');
+        var btn=$('main-btn');
+        btn.className='btn bp';
+        btn.textContent='开始更新';
+        $('pw').style.display='none';
+        isRunning=false;
+        setTimeout(loadPend,2000);
       }
     }).catch(function(){});
   },2000);
