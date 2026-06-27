@@ -2,69 +2,130 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>条码采集</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f6fa;color:#333;min-height:100vh}
-.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:20px;text-align:center}
-.header h1{font-size:18px;font-weight:600}
-.container{padding:16px;max-width:500px;margin:0 auto}
-.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.card-title{font-size:14px;font-weight:600;color:#667eea;margin-bottom:12px}
-textarea,input{width:100%;padding:12px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:14px;outline:none;transition:border-color .2s;background:#fafafa}
-textarea:focus,input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.12)}
-textarea{resize:vertical;min-height:120px;font-family:monospace;line-height:1.6}
-.btn{width:100%;padding:12px;border:none;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;margin-top:10px;transition:all .2s}
-.btn:active{opacity:.8}
-.btn-primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
-.btn-primary:hover{opacity:0.9;box-shadow:0 4px 12px rgba(102,126,234,0.4)}
-.btn-sm{background:#666;color:#fff;margin-top:8px;font-size:13px;padding:8px}
-.btn:disabled{opacity:0.5;cursor:not-allowed}
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:999;display:none}
-.progress-bar{width:100%;height:4px;background:#e8e8e8;border-radius:2px;margin-top:10px;overflow:hidden;display:none;position:relative}
-.progress-bar-inner{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:2px;width:0%;transition:width .3s}
-.progress-bar.indeterminate .progress-bar-inner{width:30%;animation:indeterminate 1.2s ease-in-out infinite}
-@keyframes indeterminate{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
-.result-box{margin-top:12px;padding:12px;border-radius:10px;font-size:12px;display:none;line-height:1.8}
-.result-success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
-.result-error{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
-.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;margin-left:4px}
+:root{--bg:#f5f6fa;--card:#fff;--text:#333;--sub:#888;--border:#e8e8e8;--input-bg:#fafafa;--input-color:#333;--primary:#667eea;--primary2:#764ba2;--success:#16a34a;--error:#dc2626;--dup:#d97706}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1a2e;--card:#252540;--text:#e0e0e0;--sub:#999;--border:#3a3a5c;--input-bg:#2a2a4a;--input-color:#e0e0e0}}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:env(safe-area-inset-bottom)}
+.header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary2) 100%);color:#fff;padding:24px 20px 20px;text-align:center;position:sticky;top:0;z-index:10}
+.header h1{font-size:18px;font-weight:600;margin-bottom:4px}
+.header .sub{font-size:12px;opacity:.75}
+.container{padding:12px 14px;max-width:500px;margin:0 auto}
+.card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid var(--border)}
+.card-title{font-size:14px;font-weight:600;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.card-title .icon{font-size:16px}
+textarea,input{width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;outline:none;transition:border-color .2s;box-shadow:0 1px 3px rgba(0,0,0,.04);background:var(--input-bg);color:var(--input-color)}
+textarea:focus,input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(102,126,234,.12)}
+textarea{resize:vertical;min-height:100px;font-family:"SF Mono",Menlo,Monaco,monospace;line-height:1.6;font-size:14px}
+.btn{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;transition:all .15s;letter-spacing:.3px}
+.btn:active{transform:scale(.98);opacity:.85}
+.btn-primary{background:linear-gradient(135deg,var(--primary) 0%,var(--primary2) 100%);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.progress{margin-top:10px;display:none}
+.progress-bar{width:100%;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-bar-inner{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:2px;width:30%;animation:slide 1.2s ease-in-out infinite}
+@keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
+.progress-text{font-size:11px;color:var(--sub);margin-top:6px;text-align:center}
+.result{margin-top:12px;padding:12px;border-radius:10px;font-size:13px;line-height:1.8;display:none;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.result-success{background:#f0fdf4;color:var(--success);border:1px solid #bbf7d0}
+.result-error{background:#fef2f2;color:var(--error);border:1px solid #fecaca}
+@media(prefers-color-scheme:dark){.result-success{background:#0a2e14;border-color:#166534}.result-error{background:#2e0a0a;border-color:#991b1b}}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500}
 .tag-new{background:#dbeafe;color:#2563eb}
-.tag-dup{background:#fef3c7;color:#d97706}
-label{font-size:12px;color:#888;margin-bottom:4px;display:block}
-.hint{font-size:11px;color:#bbb;margin-top:6px;text-align:center}
+.tag-dup{background:#fef3c7;color:var(--dup)}
+@media(prefers-color-scheme:dark){.tag-new{background:#1e3a5f;color:#60a5fa}.tag-dup{background:#422006;color:#fbbf24}}
+/* 进度面板 */
+.progress-panel{display:none}
+.progress-panel.show{display:block}
+.progress-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.progress-item:last-child{border-bottom:none}
+.progress-item .label{font-size:13px;color:var(--text)}
+.progress-item .value{font-size:13px;font-weight:600}
+.progress-item .value.ok{color:var(--success)}
+.progress-item .value.fail{color:var(--error)}
+.progress-item .value.waiting{color:var(--dup)}
+.progress-status{padding:10px 14px;border-radius:10px;font-size:12px;margin-top:8px;text-align:center;line-height:1.6}
+.status-waiting{background:#fef3c722;color:var(--dup);border:1px solid #fef3c744}
+.status-processing{background:#dbeafe22;color:var(--primary);border:1px solid #dbeafe44}
+.status-done{background:#f0fdf422;color:var(--success);border:1px solid #bbf7d044}
+.btn-sm{background:var(--primary);color:#fff;margin-top:8px;font-size:13px;padding:10px}
+label{font-size:12px;color:var(--sub);margin-bottom:4px;display:block}
+.hint{font-size:11px;color:var(--sub);margin-top:6px;text-align:center}
 .hidden{display:none!important}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.stat-item{text-align:center;padding:10px 4px;border-radius:10px;background:var(--input-bg)}
+.stat-item .num{font-size:20px;font-weight:700}
+.stat-item .lbl{font-size:10px;color:var(--sub);margin-top:2px}
+.stat-item.suc .num{color:var(--success)}
+.stat-item.fail .num{color:var(--error)}
+.stat-item.total .num{color:var(--primary)}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:#fff;padding:12px 28px;border-radius:10px;font-size:14px;z-index:999;display:none;backdrop-filter:blur(4px)}
 </style>
 </head>
 <body>
 <div class="header">
   <h1>条码采集管理</h1>
+  <div class="sub">提交条码后自动同步到扩展处理</div>
 </div>
 <div class="container">
+  <!-- Token 配置 -->
   <div class="card" id="config-card">
-    <div class="card-title">配置 Token</div>
+    <div class="card-title"><span class="icon">🔑</span>配置 Token</div>
     <label>GitHub Personal Access Token</label>
     <input id="token-input" type="password" placeholder="ghp_xxxxxxxxxxxx">
     <button class="btn btn-sm" onclick="saveToken()">保存 Token</button>
-    <div class="hint">首次使用需填写，之后自动保存</div>
+    <div class="hint">首次使用需填写，之后自动保存在本地</div>
   </div>
+
+  <!-- 条码输入 -->
   <div class="card" id="main-card">
-    <div class="card-title">导入条码</div>
+    <div class="card-title"><span class="icon">📦</span>导入条码</div>
     <textarea id="barcode-input" placeholder="每行一个条码&#10;6978xxxx50073&#10;6923xxxx01644&#10;6976xxxx75042"></textarea>
     <button id="submit-btn" class="btn btn-primary" onclick="submitBarcodes()">提交条码</button>
-    <div class="progress-bar" id="progress-bar"><div class="progress-bar-inner" id="progress-inner"></div></div>
-    <div class="result-box" id="result-box"></div>
+    <div class="progress" id="progress-section">
+      <div class="progress-bar"><div class="progress-bar-inner"></div></div>
+      <div class="progress-text" id="progress-text">提交中...</div>
+    </div>
+    <div class="result" id="result-box"></div>
+  </div>
+
+  <!-- 处理进度 -->
+  <div class="card" id="status-card">
+    <div class="card-title"><span class="icon">📊</span>处理进度</div>
+    <div id="status-content">
+      <div class="progress-status status-waiting" id="status-badge">等待条码提交...</div>
+    </div>
+    <div class="progress-panel" id="progress-panel">
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-item total"><div class="num" id="s-total">0</div><div class="lbl">待处理</div></div>
+        <div class="stat-item suc"><div class="num" id="s-success">0</div><div class="lbl">已处理</div></div>
+        <div class="stat-item fail"><div class="num" id="s-fail">0</div><div class="lbl">失败</div></div>
+      </div>
+      <div id="progress-items"></div>
+    </div>
+  </div>
+
+  <!-- 历史记录 -->
+  <div class="card" id="history-card">
+    <div class="card-title"><span class="icon">📋</span>提交历史</div>
+    <div id="history-list" style="font-size:12px;color:var(--sub);text-align:center;padding:12px 0;">暂无记录</div>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
+
 <script>
 var OWNER = 'yjy-pgy';
 var REPO = 'barcode-data';
 var FILE = 'barcodes.json';
+var STATUS_FILE = 'status.json';
+var pollTimer = null;
+var pendingCodes = [];
 
 function getToken() { return localStorage.getItem('gh_token') || ''; }
-
 function saveToken() {
   var t = document.getElementById('token-input').value.trim();
   if (!t) return showToast('请输入 Token');
@@ -72,73 +133,76 @@ function saveToken() {
   showToast('Token 已保存');
   checkToken();
 }
-
 function checkToken() {
   var t = getToken();
-  if (t) {
-    document.getElementById('config-card').classList.add('hidden');
-  } else {
-    document.getElementById('config-card').classList.remove('hidden');
-  }
+  document.getElementById('config-card').classList[t ? 'add' : 'remove']('hidden');
 }
-
 function showToast(m, d) {
   d = d || 1500;
   var t = document.getElementById("toast");
-  t.textContent = m;
-  t.style.display = "block";
+  t.textContent = m; t.style.display = "block";
   setTimeout(function() { t.style.display = "none"; }, d);
 }
 
-function setProgress(show) {
-  var bar = document.getElementById("progress-bar");
-  if (show) {
-    bar.style.display = "block";
-    bar.classList.add("indeterminate");
-  } else {
-    bar.style.display = "none";
-    bar.classList.remove("indeterminate");
-  }
+function setProgress(show, text) {
+  var s = document.getElementById("progress-section");
+  var t = document.getElementById("progress-text");
+  s.style.display = show ? "block" : "none";
+  if (text) t.textContent = text;
 }
-
 function showResult(type, html) {
   var box = document.getElementById("result-box");
-  box.className = "result-box " + (type === "success" ? "result-success" : "result-error");
+  box.className = "result " + (type === "success" ? "result-success" : "result-error");
   box.innerHTML = html;
   box.style.display = "block";
+  setTimeout(function() { box.style.display = "none"; }, 8000);
 }
 
-window.onload = function() {
-  var saved = getToken();
-  if (saved) document.getElementById('token-input').value = saved;
-  checkToken();
-};
+// 提交历史
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem('gh_history') || '[]'); } catch(e) { return []; }
+}
+function saveHistory(item) {
+  var h = loadHistory();
+  h.unshift(item);
+  if (h.length > 20) h = h.slice(0, 20);
+  localStorage.setItem('gh_history', JSON.stringify(h));
+  renderHistory();
+}
+function renderHistory() {
+  var h = loadHistory();
+  var el = document.getElementById('history-list');
+  if (h.length === 0) { el.innerHTML = '<div style="padding:12px 0;color:var(--sub)">暂无记录</div>'; return; }
+  el.innerHTML = h.map(function(item) {
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">' +
+      '<div><div style="font-size:13px;color:var(--text)">' + item.count + ' 个条码</div>' +
+      '<div style="font-size:11px;color:var(--sub);margin-top:2px">' + item.time + '</div></div>' +
+      '<div><span class="tag tag-new">新增 ' + item.newCount + '</span>' +
+      (item.dupCount > 0 ? ' <span class="tag tag-dup">重复 ' + item.dupCount + '</span>' : '') +
+      '</div></div>';
+  }).join('');
+}
 
-function getFile(token) {
-  return fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + FILE + '?t=' + Date.now(), {
+// API
+function getFile(token, file) {
+  file = file || FILE;
+  return fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + file + '?t=' + Date.now(), {
     headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
   }).then(function(r) {
-    if (r.status === 404) return { content: '[]', sha: null };
+    if (r.status === 404) return { content: '', sha: null };
     return r.json();
   });
 }
-
-function saveFile(token, content, sha, message) {
-  return fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + FILE, {
+function saveFile(token, content, sha, message, file) {
+  file = file || FILE;
+  return fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + file, {
     method: 'PUT',
-    headers: {
-      'Authorization': 'token ' + token,
-      'Content-Type': 'application/json',
-      'Accept': 'application/vnd.github.v3+json'
-    },
-    body: JSON.stringify({
-      message: message,
-      content: btoa(unescape(encodeURIComponent(content))),
-      sha: sha
-    })
+    headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
+    body: JSON.stringify({ message: message, content: btoa(unescape(encodeURIComponent(content))), sha: sha })
   }).then(function(r) { return r.json(); });
 }
 
+// 提交
 function submitBarcodes() {
   var token = getToken();
   if (!token) { showToast('请先配置 Token'); checkToken(); return; }
@@ -147,33 +211,41 @@ function submitBarcodes() {
   var text = input.value.trim();
   if (!text) return showToast("请输入条码");
   var codes = text.split(/[\n,\s]+/).map(function(s) { return s.trim(); }).filter(Boolean);
+  codes = [...new Set(codes)];
   if (codes.length === 0) return showToast("请输入有效条码");
 
-  btn.disabled = true;
-  btn.textContent = "提交中...";
+  btn.disabled = true; btn.textContent = "提交中...";
   document.getElementById("result-box").style.display = "none";
-  setProgress(true);
+  setProgress(true, "正在读取远程数据...");
+  pendingCodes = codes;
 
   getFile(token).then(function(file) {
+    setProgress(true, "正在合并条码...");
     var existing = [];
-    try { existing = JSON.parse(decodeURIComponent(escape(atob(file.content)))); } catch(e) { existing = []; }
+    if (file.content) {
+      try { existing = JSON.parse(decodeURIComponent(escape(atob(file.content)))); } catch(e) { existing = []; }
+    }
     if (!Array.isArray(existing)) existing = [];
     var newCodes = codes.filter(function(c) { return existing.indexOf(c) === -1; });
     var dupCount = codes.length - newCodes.length;
     existing.push.apply(existing, newCodes);
     var content = JSON.stringify(existing, null, 2);
+    setProgress(true, "正在提交到 GitHub...");
     return saveFile(token, content, file.sha, '添加 ' + newCodes.length + ' 个条码').then(function(result) {
       return { result: result, newCount: newCodes.length, dupCount: dupCount, total: codes.length };
     });
   }).then(function(data) {
     setProgress(false);
     if (data.result.content) {
+      var now = new Date().toLocaleString('zh-CN');
       var html = '提交成功！共 ' + data.total + ' 个条码';
       html += '<br><span class="tag tag-new">新增 ' + data.newCount + ' 个</span>';
       if (data.dupCount > 0) html += ' <span class="tag tag-dup">重复 ' + data.dupCount + ' 个</span>';
       showResult("success", html);
       showToast("已提交 " + data.total + " 个条码");
       input.value = "";
+      saveHistory({ count: data.total, newCount: data.newCount, dupCount: data.dupCount, time: now });
+      startProgressPolling(data.newCount);
     } else {
       showResult("error", "提交失败: " + (data.result.message || "未知错误"));
       showToast("提交失败");
@@ -183,10 +255,64 @@ function submitBarcodes() {
     showResult("error", "提交失败: " + err.message);
     showToast("提交失败");
   }).finally(function() {
-    btn.disabled = false;
-    btn.textContent = "提交条码";
+    btn.disabled = false; btn.textContent = "提交条码";
   });
 }
+
+// 进度轮询
+function startProgressPolling(total) {
+  var panel = document.getElementById('progress-panel');
+  var badge = document.getElementById('status-badge');
+  panel.classList.add('show');
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-success').textContent = '0';
+  document.getElementById('s-fail').textContent = '0';
+  badge.className = 'progress-status status-processing';
+  badge.textContent = '等待扩展处理中...';
+  if (pollTimer) clearInterval(pollTimer);
+  var startTime = Date.now();
+  pollTimer = setInterval(function() {
+    var token = getToken();
+    if (!token) return;
+    // 检查 barcodes.json 是否被清空
+    getFile(token).then(function(file) {
+      var remaining = 0;
+      if (file.content) {
+        try {
+          var arr = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+          remaining = Array.isArray(arr) ? arr.length : 0;
+        } catch(e) {}
+      }
+      var processed = total - remaining;
+      if (processed > 0) {
+        document.getElementById('s-success').textContent = processed;
+        document.getElementById('s-total').textContent = remaining;
+      }
+      if (remaining === 0 && processed > 0) {
+        // 全部处理完
+        clearInterval(pollTimer);
+        pollTimer = null;
+        badge.className = 'progress-status status-done';
+        badge.textContent = '全部处理完成！共 ' + total + ' 个条码';
+        document.getElementById('s-total').textContent = '0';
+        document.getElementById('s-success').textContent = total;
+      }
+      // 超时 10 分钟
+      if (Date.now() - startTime > 600000) {
+        clearInterval(pollTimer); pollTimer = null;
+        badge.className = 'progress-status status-waiting';
+        badge.textContent = '轮询超时，剩余 ' + remaining + ' 个未处理';
+      }
+    }).catch(function() {});
+  }, 5000);
+}
+
+window.onload = function() {
+  var saved = getToken();
+  if (saved) document.getElementById('token-input').value = saved;
+  checkToken();
+  renderHistory();
+};
 </script>
 </body>
 </html>
