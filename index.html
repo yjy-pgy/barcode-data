@@ -11,17 +11,13 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--bg:#f5f6fa;--card:#fff;--text:#333;--sub:#999;--border:#e8e8e8;--border2:#f0f0f0;--input-bg:#fff;--input-border:#e0e0e0;--stats-bg:#f8f9ff;--primary:#667eea;--primary2:#764ba2;--ok:#2dc76e;--err:#f5576c;--grey:#999;--shadow:0 2px 8px rgba(0,0,0,.06)}
 @media(prefers-color-scheme:dark){:root{--bg:#1a1a2e;--card:#252540;--text:#e0e0e0;--sub:#777;--border:#3a3a5c;--border2:#333355;--input-bg:#2a2a4a;--input-border:#3a3a5c;--stats-bg:#1e1e3a;--shadow:0 2px 8px rgba(0,0,0,.2)}}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;min-height:100vh;min-height:100dvh;padding-bottom:env(safe-area-inset-bottom)}
-/* 头部 */
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;min-height:100vh;padding-bottom:env(safe-area-inset-bottom)}
 .hdr{padding:14px 18px;font-size:15px;font-weight:600;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:10}
-/* 统计 */
 .stats{padding:10px 18px;background:var(--stats-bg);border-bottom:1px solid var(--border2);font-size:12px;display:flex;flex-wrap:wrap;gap:4px}
 .stats i{font-style:normal;padding:3px 10px;border-radius:4px;white-space:nowrap}
 .st{background:rgba(0,0,0,.04)}.ss{background:rgba(67,233,123,.1);color:var(--ok)}.sr{background:rgba(102,126,234,.1);color:var(--primary)}.sn{background:rgba(153,153,153,.1);color:var(--grey)}.sf{background:rgba(245,87,108,.1);color:var(--err)}
 @media(prefers-color-scheme:dark){.st{background:rgba(255,255,255,.06)}.ss{background:rgba(67,233,123,.15)}.sr{background:rgba(102,126,234,.15)}.sn{background:rgba(153,153,153,.15)}.sf{background:rgba(245,87,108,.15)}}
-/* 日志 */
 .log{padding:6px 18px;font-size:11px;color:var(--sub);border-bottom:1px solid var(--border2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* 输入区 */
 .sec{padding:16px 18px;border-bottom:1px solid var(--border2)}
 .sec-t{font-size:12px;color:var(--sub);margin-bottom:6px}
 textarea{width:100%;padding:8px 10px;border:1px solid var(--input-border);border-radius:6px;font-size:13px;outline:none;resize:vertical;font-family:monospace;line-height:1.6;background:var(--input-bg);color:var(--text)}
@@ -32,6 +28,7 @@ input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(102,126,234,.1
 .btn{flex:1;padding:7px 0;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:all .12s}
 .btn:active{opacity:.8;transform:scale(.98)}
 .bp{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff}
+.bstop{background:linear-gradient(135deg,#ff6b6b,#ee5a5a);color:#fff}
 .bo{border:1px solid var(--err);background:var(--card);color:var(--err)}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .info{margin-top:8px;font-size:12px;display:none}
@@ -41,7 +38,6 @@ input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(102,126,234,.1
 .pf{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:2px;width:30%;animation:sl 1.2s ease-in-out infinite}
 @keyframes sl{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
 .pl{font-size:11px;color:var(--sub);margin-top:4px;text-align:center}
-/* 表格 */
 .th{padding:10px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border2)}
 .th span{font-size:12px;color:#666}
 .th button{padding:4px 12px;border:1px solid var(--err);border-radius:4px;background:var(--card);color:var(--err);cursor:pointer;font-size:12px}
@@ -54,9 +50,8 @@ td{padding:8px 6px;white-space:nowrap;border-bottom:1px solid var(--border2)}
 .td-n{max-width:120px;overflow:hidden;text-overflow:ellipsis}
 .td-c{max-width:70px;overflow:hidden;text-overflow:ellipsis}
 .td-s{color:var(--ok);position:sticky;right:0;background:var(--card);box-shadow:-2px 0 4px rgba(0,0,0,.06);max-width:80px;overflow:hidden;text-overflow:ellipsis}
-.td-s.fail{color:var(--err)}.t d-s.ng{color:var(--grey)}
+.td-s.fail{color:var(--err)}.td-s.ng{color:var(--grey)}
 .emp{text-align:center;padding:20px;color:var(--sub)}
-/* Token */
 .tk{padding:16px 18px;border-bottom:1px solid var(--border2)}
 .tk label{font-size:12px;color:var(--sub);margin-bottom:6px;display:block}
 .tr{display:flex;gap:8px;align-items:center}
@@ -64,14 +59,12 @@ td{padding:8px 6px;white-space:nowrap;border-bottom:1px solid var(--border2)}
 .tr .btn{flex:0 0 auto;padding:7px 16px}
 .hint{font-size:11px;color:var(--sub);margin-top:6px;text-align:center}
 .hd{display:none!important}
-/* 历史 */
 .hi{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border2)}
 .hi:last-child{border-bottom:none}
 .hl .hc{font-size:13px;color:var(--text)}.hl .ht{font-size:11px;color:var(--sub);margin-top:2px}
 .tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500}
 .tg{background:rgba(102,126,234,.1);color:var(--primary)}
 .td{background:rgba(245,87,108,.1);color:var(--err)}
-/* toast */
 .tst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:#fff;padding:12px 28px;border-radius:10px;font-size:14px;z-index:999;display:none;backdrop-filter:blur(4px)}
 </style>
 </head>
@@ -102,6 +95,7 @@ td{padding:8px 6px;white-space:nowrap;border-bottom:1px solid var(--border2)}
   <textarea id="inp" rows="4" placeholder="6978xxxx50073&#10;6923xxxx01644&#10;6976xxxx75042"></textarea>
   <div class="brow">
     <button id="sub-btn" class="btn bp" onclick="submit()">提交条码</button>
+    <button id="stop-btn" class="btn bstop" onclick="stopPoll()" style="display:none">停止采集</button>
     <button class="btn bo" onclick="$('inp').value=''">清空条码</button>
   </div>
   <div class="pw" id="pw"><div class="pt"><div class="pf"></div></div><div class="pl" id="pl">提交中...</div></div>
@@ -125,7 +119,8 @@ td{padding:8px 6px;white-space:nowrap;border-bottom:1px solid var(--border2)}
 
 <script>
 var O='yjy-pgy',R='barcode-data',F='barcodes.json';
-var pt=null,psc=0,results=[];
+var pt=null,psc=0,subTotal=0;
+var results=[];
 
 function $(i){return document.getElementById(i)}
 function tk(){return localStorage.getItem('gh_token')||''}
@@ -135,8 +130,8 @@ function toast(m,d){d=d||1500;var t=$('tst');t.textContent=m;t.style.display='bl
 function log(m){$('log').textContent='['+new Date().toLocaleTimeString()+'] '+m}
 function msg(m,ok){var e=$('msg');e.style.display='block';e.textContent=m;e.className='info '+(ok?'iok':'ier');setTimeout(function(){e.style.display='none'},4000)}
 function prog(s,t){$('pw').style.display=s?'block':'none';if(t)$('pl').textContent=t}
+function setStopBtn(show){$('stop-btn').style.display=show?'flex':'none'}
 
-// GitHub API
 function api(p,o){var h={'Accept':'application/vnd.github.v3+json'},t=tk();if(t)h['Authorization']='token '+t;if(o&&o.h)for(var k in o.h)h[k]=o.h[k];return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?t='+Date.now(),{method:(o&&o.m)||'GET',headers:h,body:o&&o.b?JSON.stringify(o.b):undefined}).then(function(r){return r.json()})}
 function getF(){return api(F).then(function(r){if(r.message==='Not Found')return{content:'[]',sha:null};return r})}
 function putF(c,s,m){var t=tk();return api(F,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:m,content:btoa(unescape(encodeURIComponent(c))),sha:s}})}
@@ -169,7 +164,7 @@ function submit(){
   }).then(function(d){
     prog(false);
     if(d.r.content){
-      psc=d.n;
+      subTotal=d.n;
       var m='提交成功！共 '+d.t+' 个条码';if(d.n>0)m+=' | 新增 '+d.n;if(d.d>0)m+=' | 重复 '+d.d;
       msg(m,true);log('已提交 '+d.t+' 个条码（新增 '+d.n+'，重复 '+d.d+'）');toast('已提交 '+d.t+' 个条码');
       inp.value='';saveH({c:d.t,n:d.n,d:d.d,time:new Date().toLocaleString('zh-CN')});startPoll();loadPend();
@@ -177,30 +172,55 @@ function submit(){
   }).catch(function(e){prog(false);msg('提交失败: '+e.message,false);log('提交失败: '+e.message)}).finally(function(){btn.disabled=false;btn.textContent='提交条码'})
 }
 
-function startPoll(){
-  if(pt)return;$('s-s').textContent='0';$('s-r').textContent=psc;log('等待扩展处理...');
-  var st=Date.now(),started=false;
-  pt=setInterval(function(){
-    var t=tk();
-    var u='https://api.github.com/repos/'+O+'/'+R+'/contents/status.json';
-    console.log('[Poll] fetching status.json...');
-    fetch(u,{headers:{'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json'}}).then(function(r){console.log('[Poll] status:', r.status);if(!r.ok)throw 0;return r.json()}).then(function(f){
-      if(!f.content)throw 0;
-      var raw=f.content.replace(/\s/g,'');
-      console.log('[Poll] raw content:', raw.substring(0,50));
-      var d=JSON.parse(decodeURIComponent(escape(atob(raw))));
-      console.log('[Poll] parsed:', JSON.stringify(d));
-      started=true;
-      if(d.total>0){$('s-s').textContent=d.done||0;$('s-r').textContent=Math.max(0,(d.total||psc)-(d.done||0));psc=d.total}
-      if(d.status==='done'){clearInterval(pt);pt=null;log('全部处理完成，共 '+psc+' 个条码');toast('处理完成')}
-      if(Date.now()-st>600000){clearInterval(pt);pt=null;log('轮询超时')}
-    }).catch(function(e){console.log('[Poll] error:', e);if(started)return;if(Date.now()-st>30000){clearInterval(pt);pt=null;log('等待超时，未收到扩展响应');toast('等待超时')}})
-  },3000)
+function stopPoll(){
+  if(pt){clearInterval(pt);pt=null;setStopBtn(false);log('已停止轮询');toast('已停止')}
 }
 
-function loadH(){try{return JSON.parse(localStorage.getItem('gh_h')||'[]')}catch(e){return[]}}
-function saveH(i){var h=loadH();h.unshift(i);if(h.length>20)h=h.slice(0,20);localStorage.setItem('gh_h',JSON.stringify(h));renderH()}
-function renderH(){var h=loadH(),el=$('hl');if(!h.length){el.innerHTML='<div class="emp">暂无记录</div>';return}el.innerHTML=h.map(function(i){return'<div class="hi"><div class="hl"><div class="hc">'+i.c+' 个条码</div><div class="ht">'+i.time+'</div></div><div><span class="tag tg">新增 '+i.n+'</span>'+(i.d>0?' <span class="tag td">重复 '+i.d+'</span>':'')+'</div></div>'}).join('')}
+function readResults(){
+  api('results.json').then(function(f){
+    if(!f.content)return;
+    var r=parse(f.content);
+    if(Array.isArray(r)&&r.length>0){
+      results=r;renderTB();updateStats();
+      var sc=results.filter(function(x){return x.status==='success'}).length;
+      var fc=results.filter(function(x){return x.status==='fail'}).length;
+      var nc=results.filter(function(x){return x.status==='noGoods'}).length;
+      log('已同步 '+results.length+' 条结果（成功 '+sc+'，失败 '+fc+'，无商品 '+nc+'）');
+    }
+  }).catch(function(){})
+}
+
+function startPoll(){
+  if(pt)return;
+  setStopBtn(true);
+  $('s-s').textContent='0';$('s-r').textContent=subTotal||0;
+  log('等待扩展处理...');
+  var st=Date.now(),done=false;
+  pt=setInterval(function(){
+    if(!tk()){stopPoll();return}
+    api('status.json').then(function(f){
+      if(!f.content)return;
+      var d=parse(f.content);
+      if(!d||!d.status)return;
+      if(d.total>0){$('s-t').textContent=d.total;$('s-s').textContent=d.done||0;$('s-r').textContent=Math.max(0,(d.total||0)-(d.done||0))}
+      if(d.status==='processing'){
+        var rem=Math.max(0,(d.total||0)-(d.done||0));
+        $('s-r').textContent=rem;
+        log('采集中（已完成 '+d.done+'/'+d.total+'，剩余 '+rem+'）');
+        done=true;
+      }
+      if(d.status==='done'){
+        clearInterval(pt);pt=null;
+        $('s-s').textContent=d.total||subTotal;$('s-r').textContent=0;
+        log('全部处理完成，共 '+(d.total||subTotal)+' 个条码');
+        setStopBtn(false);
+        toast('处理完成');
+        setTimeout(readResults,2000);
+      }
+    }).catch(function(){});
+    if(Date.now()-st>600000){clearInterval(pt);pt=null;log('轮询超时（10分钟）');setStopBtn(false)}
+  },3000)
+}
 
 function renderTB(){
   var tb=$('tb');$('tc').textContent=results.length;
@@ -208,12 +228,24 @@ function renderTB(){
   tb.innerHTML=results.slice().reverse().map(function(r){
     var c=r.status==='success'?'var(--ok)':r.status==='noGoods'?'var(--grey)':'var(--err)';
     var l=r.status==='success'?'成功':r.status==='noGoods'?'无商品':r.message||'失败';
-    return'<tr><td class="td-n" title="'+(r.name||'-').replace(/"/g,'&quot;')+'">'+(r.name||'-')+'</td><td style="font-family:monospace">'+(r.barCode||'-')+'</td><td class="td-c" title="'+(r.category||'-').replace(/"/g,'&quot;')+'">'+(r.category||'-')+'</td><td>'+(r.spec|| '-')+'</td><td class="td-s'+(r.status==='fail'?' fail':r.status==='noGoods'?' ng':'')+'">'+l+'</td></tr>'
+    var sc=r.status==='fail'?' fail':r.status==='noGoods'?' ng':'';
+    return'<tr><td class="td-n" title="'+(r.name||'-').replace(/"/g,'&quot;')+'">'+(r.name||'-')+'</td><td style="font-family:monospace">'+(r.barCode||'-')+'</td><td class="td-c" title="'+(r.category||'-').replace(/"/g,'&quot;')+'">'+(r.category||'-')+'</td><td>'+(r.spec||'-')+'</td><td class="td-s'+sc+'">'+l+'</td></tr>'
   }).join('')
 }
-function clr(){results=[];renderTB();updateStats();log('数据已清空')}
 
-window.onload=function(){var s=tk();if(s)$('tk-in').value=s;chk();renderH();try{var r=localStorage.getItem('gh_r');if(r)results=JSON.parse(r)}catch(e){}renderTB();updateStats()}
+function clr(){
+  results=[];renderTB();updateStats();$('s-t').textContent='0';$('s-s').textContent='0';$('s-r').textContent='0';$('s-n').textContent='0';$('s-f').textContent='0';
+  log('数据已清空')
+}
+
+window.onload=function(){
+  var s=tk();if(s)$('tk-in').value=s;chk();renderH();
+  try{var r=localStorage.getItem('gh_r');if(r)results=JSON.parse(r)}catch(e){}
+  renderTB();updateStats()
+}
+function loadH(){try{return JSON.parse(localStorage.getItem('gh_h')||'[]')}catch(e){return[]}}
+function saveH(i){var h=loadH();h.unshift(i);if(h.length>20)h=h.slice(0,20);localStorage.setItem('gh_h',JSON.stringify(h));renderH()}
+function renderH(){var h=loadH(),el=$('hl');if(!h.length){el.innerHTML='<div class="emp">暂无记录</div>';return}el.innerHTML=h.map(function(i){return'<div class="hi"><div class="hl"><div class="hc">'+i.c+' 个条码</div><div class="ht">'+i.time+'</div></div><div><span class="tag tg">新增 '+i.n+'</span>'+(i.d>0?' <span class="tag td">重复 '+i.d+'</span>':'')+'</div></div>'}).join('')}
 </script>
 </body>
 </html>
