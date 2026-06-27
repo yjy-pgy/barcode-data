@@ -150,8 +150,18 @@ function startUpdate(){
   isRunning=true;
   log('发送开始更新命令...');
   
-  // 写 command.json 触发扩展开始处理
-  api('command.json').then(function(f){
+  // 先清除 status.json，防止读到旧状态
+  var statusSha=null;
+  api('status.json').then(function(f){
+    statusSha=f.sha||null;
+    return api('status.json',{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Reset status',content:btoa(unescape(encodeURIComponent(JSON.stringify({status:'pending',total:0,done:0,time:Date.now()})))),sha:statusSha}});
+  }).catch(function(){
+    // status.json 不存在，创建新文件
+    return api('status.json',{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Create status',content:btoa(unescape(encodeURIComponent(JSON.stringify({status:'pending',total:0,done:0,time:Date.now()}))))}});
+  }).then(function(){
+    // 写 command.json 触发扩展开始处理
+    return api('command.json');
+  }).then(function(f){
     var sha=f.sha||null;
     return api('command.json',{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Start update',content:btoa(unescape(encodeURIComponent(JSON.stringify({action:'start',time:Date.now()})))),sha:sha}});
   }).then(function(){
@@ -172,6 +182,8 @@ function stopUpdate(){
   toast('已停止');
 }
 
+var lastStatus='pending';
+
 function startPoll(){
   if(pollTimer)return;
   pollTimer=setInterval(function(){
@@ -184,22 +196,29 @@ function startPoll(){
       $('s-t').textContent=total;
       $('s-s').textContent=done;
       $('s-r').textContent=Math.max(0,total-done);
-      if(total>0){
-        var pct=Math.round(done/total*100);
-        $('pf').style.width=pct+'%';
-        $('pl').textContent='已完成 '+done+'/'+total+' ('+pct+'%)';
-      }
-      if(d.status==='processing'){
+      if(d.status==='pending'){
+        $('pl').textContent='等待扩展响应...';
+        log('等待扩展接收命令...');
+      }else if(d.status==='processing'){
+        lastStatus='processing';
+        if(total>0){
+          var pct=Math.round(done/total*100);
+          $('pf').style.width=pct+'%';
+          $('pl').textContent='处理中 '+done+'/'+total+' ('+pct+'%)';
+        }
         log('处理中... ('+done+'/'+total+')');
-      }
-      if(d.status==='done'||d.status==='complete'){
-        clearInterval(pollTimer);pollTimer=null;
-        $('pf').style.width='100%';
-        $('pl').textContent='已完成 '+total+' 个';
-        log('全部处理完成');
-        toast('处理完成');
-        stopUpdate();
-        setTimeout(loadPend,2000);
+      }else if(d.status==='done'||d.status==='complete'){
+        if(lastStatus==='processing'){
+          clearInterval(pollTimer);pollTimer=null;
+          $('pf').style.width='100%';
+          $('pl').textContent='已完成 '+total+' 个';
+          $('s-s').textContent=total;
+          $('s-r').textContent=0;
+          log('全部处理完成');
+          toast('处理完成');
+          stopUpdate();
+          setTimeout(loadPend,2000);
+        }
       }
     }).catch(function(){});
   },2000);
