@@ -206,7 +206,7 @@ function startUpdate(){
 function stopUpdate(){
   if(pollTimer){clearInterval(pollTimer);pollTimer=null;}
   isRunning=false;
-  submittedCodes=[];
+  // 不清空 submittedCodes，保留条码以便继续使用
   var btn=$('main-btn');
   btn.className='btn bp';
   btn.textContent='开始更新';
