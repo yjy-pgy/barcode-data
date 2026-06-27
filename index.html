@@ -181,8 +181,11 @@ function startPoll(){
   if(pt)return;$('s-s').textContent='0';$('s-r').textContent=psc;log('等待扩展处理...');
   var st=Date.now();
   pt=setInterval(function(){
-    var u='https://raw.githubusercontent.com/yjy-pgy/barcode-data/main/status.json?v='+Date.now();
-    fetch(u,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
+    var t=tk();
+    var u='https://api.github.com/repos/'+GR+'/contents/status.json';
+    fetch(u,{headers:{'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json','If-None-Match':''}}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(f){
+      if(!f.content)throw 0;
+      var d=JSON.parse(decodeURIComponent(escape(atob(f.content.replace(/\s/g,'')))));
       if(d.total>0){$('s-s').textContent=d.done||0;$('s-r').textContent=Math.max(0,(d.total||psc)-(d.done||0))}
       if(d.status==='done'){clearInterval(pt);pt=null;log('全部处理完成，共 '+(d.total||psc)+' 个条码');toast('处理完成')}
       if(Date.now()-st>600000){clearInterval(pt);pt=null;log('轮询超时')}
