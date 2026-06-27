@@ -1,6 +1,7 @@
 {
   "total": 1,
-  "done": 1,
-  "status": "done",
-  "time": 1782566250803
+  "done": 0,
+  "status": "processing",
+  "remaining": 1,
+  "time": 1782566658274
 }
