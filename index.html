@@ -22,8 +22,10 @@ textarea{resize:vertical;min-height:120px;font-family:monospace;line-height:1.6}
 .btn-sm{background:#666;color:#fff;margin-top:8px;font-size:13px;padding:8px}
 .btn:disabled{opacity:0.5;cursor:not-allowed}
 .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:999;display:none}
-.progress-bar{width:100%;height:4px;background:#e8e8e8;border-radius:2px;margin-top:10px;overflow:hidden;display:none}
+.progress-bar{width:100%;height:4px;background:#e8e8e8;border-radius:2px;margin-top:10px;overflow:hidden;display:none;position:relative}
 .progress-bar-inner{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:2px;width:0%;transition:width .3s}
+.progress-bar.indeterminate .progress-bar-inner{width:30%;animation:indeterminate 1.2s ease-in-out infinite}
+@keyframes indeterminate{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
 .result-box{margin-top:12px;padding:12px;border-radius:10px;font-size:12px;display:none;line-height:1.8}
 .result-success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
 .result-error{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
@@ -88,11 +90,15 @@ function showToast(m, d) {
   setTimeout(function() { t.style.display = "none"; }, d);
 }
 
-function setProgress(pct) {
+function setProgress(show) {
   var bar = document.getElementById("progress-bar");
-  var inner = document.getElementById("progress-inner");
-  bar.style.display = "block";
-  inner.style.width = pct + "%";
+  if (show) {
+    bar.style.display = "block";
+    bar.classList.add("indeterminate");
+  } else {
+    bar.style.display = "none";
+    bar.classList.remove("indeterminate");
+  }
 }
 
 function showResult(type, html) {
@@ -146,10 +152,9 @@ function submitBarcodes() {
   btn.disabled = true;
   btn.textContent = "提交中...";
   document.getElementById("result-box").style.display = "none";
-  setProgress(20);
+  setProgress(true);
 
   getFile(token).then(function(file) {
-    setProgress(50);
     var existing = [];
     try { existing = JSON.parse(decodeURIComponent(escape(atob(file.content)))); } catch(e) { existing = []; }
     if (!Array.isArray(existing)) existing = [];
@@ -157,12 +162,11 @@ function submitBarcodes() {
     var dupCount = codes.length - newCodes.length;
     existing.push.apply(existing, newCodes);
     var content = JSON.stringify(existing, null, 2);
-    setProgress(80);
     return saveFile(token, content, file.sha, '添加 ' + newCodes.length + ' 个条码').then(function(result) {
       return { result: result, newCount: newCodes.length, dupCount: dupCount, total: codes.length };
     });
   }).then(function(data) {
-    setProgress(100);
+    setProgress(false);
     if (data.result.content) {
       var html = '提交成功！共 ' + data.total + ' 个条码';
       html += '<br><span class="tag tag-new">新增 ' + data.newCount + ' 个</span>';
@@ -175,13 +179,12 @@ function submitBarcodes() {
       showToast("提交失败");
     }
   }).catch(function(err) {
-    setProgress(100);
+    setProgress(false);
     showResult("error", "提交失败: " + err.message);
     showToast("提交失败");
   }).finally(function() {
     btn.disabled = false;
     btn.textContent = "提交条码";
-    setTimeout(function() { document.getElementById("progress-bar").style.display = "none"; }, 1000);
   });
 }
 </script>
