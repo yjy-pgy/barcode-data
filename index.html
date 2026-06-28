@@ -176,7 +176,6 @@ function loadPend(){
     var a=parse(f.content),n=Array.isArray(a)?a.length:0;
     remaining=n;$('s-r').textContent=n;$('stats-card').style.display='block';
     if(n>0)log(n+' 个条码等待处理');
-    else if(submittedCodes.length>0&&total>0){$('inp').value='';log(total+' 个已全部完成');toast('全部完成')}
   }).catch(function(){total=loadTotal()})
 }
 
@@ -265,12 +264,13 @@ function startPoll(){
         if(rc.length!==submittedCodes.length){submittedCodes=rc;saveSubmitted(rc)}
       }
 
-      if(total>0){
-        var done=total-n,pct=Math.min(100,Math.round(done/total*100));
-        $('pf').style.width=pct+'%';$('pl').textContent=done+'/'+total+' ('+pct+'%)';
+      var base=submittedCodes.length;
+      if(base>0){
+        var done=base-n,pct=Math.min(100,Math.round(done/base*100));
+        $('pf').style.width=pct+'%';$('pl').textContent=done+'/'+base+' ('+pct+'%)';
         if(n===0){
           clearInterval(pollTimer);pollTimer=null;
-          $('pf').style.width='100%';$('pl').textContent='全部完成 '+total+' 条';
+          $('pf').style.width='100%';$('pl').textContent='全部完成 '+base+' 条';
           $('s-r').textContent='0';log('全部完成');toast('处理完成');
           $('main-btn').textContent='开始更新';
           $('pw').style.display='none';isRunning=false;saveTotal(0);total=0;
