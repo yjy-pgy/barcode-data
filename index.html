@@ -204,20 +204,8 @@ function startUpdate(){
   var btn=$('main-btn');btn.textContent='停止';btn.disabled=false;
   $('pw').style.display='block';$('pf').style.width='0%';$('pl').textContent='等待扩展处理...';
   isRunning=true;log('已提交，等待处理...');
-  // 清空上一批 status.json，只显示当前批次
-  clearStatus();
   doPut(C,btoa(unescape(encodeURIComponent(JSON.stringify({action:'resume',time:Date.now()})))));
   loadPend();startPoll();
-}
-
-function clearStatus(){
-  var t=tk();if(!t)return;
-  api('status.json').then(function(f){
-    if(!f.sha)return;
-    var h={'Authorization':'token '+t,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'};
-    var empty=btoa(unescape(encodeURIComponent(JSON.stringify({barcodes:{}}))));
-    return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/status.json',{method:'PUT',headers:h,body:JSON.stringify({message:'清空状态',content:empty,sha:f.sha})});
-  }).catch(function(){});
 }
 
 function doPut(p,content){
