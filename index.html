@@ -150,7 +150,7 @@ textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,122,255,.
 
 <script>
 var O='yjy-pgy',R='barcode-data',F='barcodes.json',C='control.json';
-var pollTimer=null,total=0,totalKey='gh_total',remaining=0,isRunning=false,submittedCodes=[],submittedKey='gh_submitted',batchStartTime=0;
+var pollTimer=null,total=0,totalKey='gh_total',remaining=0,isRunning=false,submittedCodes=[],submittedKey='gh_submitted';
 
 function $(i){return document.getElementById(i)}
 function tk(){return localStorage.getItem('gh_token')||''}
@@ -160,8 +160,7 @@ function loadTotal(){return parseInt(localStorage.getItem(totalKey))||0}
 function saveTotal(t){localStorage.setItem(totalKey,t)}
 function loadSubmitted(){try{var s=localStorage.getItem(submittedKey);return s?JSON.parse(s):[]}catch(e){return[]}}
 function saveSubmitted(codes){localStorage.setItem(submittedKey,JSON.stringify(codes))}
-function clearSubmitted(){localStorage.removeItem(submittedKey);localStorage.removeItem(totalKey);batchStartTime=0}
-function startNewBatch(){batchStartTime=Date.now()}
+function clearSubmitted(){localStorage.removeItem(submittedKey);localStorage.removeItem(totalKey)}
 function toast(m,d){d=d||1800;var t=$('tst');t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},d)}
 function log(m){var c=$('log');var d=document.createElement('div');d.className='log-item';var now=new Date();var ts=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');d.innerHTML='<span class="log-time">'+ts+'</span><span class="log-msg">'+m+'</span>';c.appendChild(d);while(c.children.length>20)c.removeChild(c.firstChild);c.scrollTop=c.scrollHeight}
 function msg(m,ok){var e=$('msg');e.style.display='block';e.textContent=m;e.className='info '+(ok?'ok':'er');setTimeout(function(){e.style.display='none'},3500)}
@@ -188,7 +187,6 @@ function submit(){
   if(!txt){toast('请输入条码');return}
   var codes=[...new Set(txt.split(/[\n,\s]+/).map(function(s){return s.trim()}).filter(Boolean))];
   if(!codes.length)return toast('请输入有效条码');
-  startNewBatch();
   btn.disabled=true;btn.textContent='提交中...';$('msg').style.display='none';
     api(F).then(function(f){
       var ex=parse(f.content);if(!Array.isArray(ex))ex=[];
@@ -207,8 +205,19 @@ function startUpdate(){
   var btn=$('main-btn');btn.textContent='停止';btn.disabled=false;
   $('pw').style.display='block';$('pf').style.width='0%';$('pl').textContent='等待扩展处理...';
   isRunning=true;log('已提交，等待处理...');
+  // 清空上一批 status.json，只显示当前批次
+  clearStatus();
   doPut(C,btoa(unescape(encodeURIComponent(JSON.stringify({action:'resume',time:Date.now()})))));
   loadPend();startPoll();
+}
+
+function clearStatus(){
+  var t=tk(),h={'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json'};
+  api('status.json').then(function(f){
+    if(!f.sha)return;
+    var empty=btoa(unescape(encodeURIComponent(JSON.stringify({barcodes:{}}))));
+    return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/status.json',{method:'PUT',headers:{'Authorization':'token '+t,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify({message:'重置状态',content:empty,sha:f.sha})});
+  }).catch(function(e){});
 }
 
 function doPut(p,content){
@@ -269,9 +278,9 @@ function startPoll(){
       }else $('pl').textContent='等待扩展处理...';
 
       api('status.json').then(function(f){
-        var r=parse(f.content),s=0,nn=0,fl=0,bt=batchStartTime||0;
-        if(r&&r.barcodes){for(var k in r.barcodes){if(submittedCodes.length>0&&submittedCodes.indexOf(k)===-1)continue;var v=r.barcodes[k];if(bt&&(!v.time||v.time<bt))continue;var st=v.status;if(st==='success')s++;else if(st==='noGoods')nn++;else if(st==='fail')fl++}}
-        else if(r){var sk=['status','total','done','time'];for(var k in r){if(sk.indexOf(k)!==-1)continue;if(submittedCodes.length>0&&submittedCodes.indexOf(k)===-1)continue;var v=r[k];if(bt&&(!v.time||v.time<bt))continue;var st=v.status;if(st==='success')s++;else if(st==='noGoods')nn++;else if(st==='fail')fl++}}
+        var r=parse(f.content),s=0,nn=0,fl=0;
+        if(r&&r.barcodes){for(var k in r.barcodes){if(submittedCodes.length>0&&submittedCodes.indexOf(k)===-1)continue;var st=r.barcodes[k].status;if(st==='success')s++;else if(st==='noGoods')nn++;else if(st==='fail')fl++}}
+        else if(r){var sk=['status','total','done','time'];for(var k in r){if(sk.indexOf(k)!==-1)continue;if(submittedCodes.length>0&&submittedCodes.indexOf(k)===-1)continue;var st=r[k].status;if(st==='success')s++;else if(st==='noGoods')nn++;else if(st==='fail')fl++}}
         localStorage.setItem('gh_status',JSON.stringify({s:s,n:nn,f:fl,t:Date.now()}));
         $('s-s').textContent=s;$('s-n').textContent=nn;$('s-f').textContent=fl;
       }).catch(function(){try{var c=JSON.parse(localStorage.getItem('gh_status'));if(c){$('s-s').textContent=c.s;$('s-n').textContent=c.n;$('s-f').textContent=c.f}}catch(e){}});
