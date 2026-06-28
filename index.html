@@ -196,7 +196,6 @@ function startUpdate(){
   loadPend();startPoll();
 }
 
-}
 function doPut(p,content){
   var tk_=tk(),h={'Authorization':'token '+tk_,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'};
   api(p).then(function(f){
