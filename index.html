@@ -9,72 +9,104 @@
 <title>条码采集</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--bg:#f5f6fa;--card:#fff;--text:#333;--sub:#999;--border:#e8e8e8;--border2:#f0f0f0;--input-bg:#fff;--input-border:#e0e0e0;--stats-bg:#f8f9ff;--primary:#667eea;--primary2:#764ba2;--ok:#2dc76e;--err:#f5576c;--grey:#999;--shadow:0 2px 8px rgba(0,0,0,.06)}
-@media(prefers-color-scheme:dark){:root{--bg:#1a1a2e;--card:#252540;--text:#e0e0e0;--sub:#777;--border:#3a3a5c;--border2:#333355;--input-bg:#2a2a4a;--input-border:#3a3a5c;--stats-bg:#1e1e3a;--shadow:0 2px 8px rgba(0,0,0,.2)}}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;min-height:100vh;padding-bottom:env(safe-area-inset-bottom)}
-.hdr{padding:14px 18px;font-size:15px;font-weight:600;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:10}
-.log{padding:6px 18px;font-size:11px;color:var(--sub);border-bottom:1px solid var(--border2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sec{padding:16px 18px;border-bottom:1px solid var(--border2)}
-.sec-t{font-size:12px;color:var(--sub);margin-bottom:6px}
-textarea{width:100%;padding:8px 10px;border:1px solid var(--input-border);border-radius:6px;font-size:13px;outline:none;resize:vertical;font-family:monospace;line-height:1.6;background:var(--input-bg);color:var(--text)}
-textarea:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(102,126,234,.15)}
-input[type=text],input[type=password]{width:100%;padding:8px 10px;border:1px solid var(--input-border);border-radius:6px;font-size:13px;outline:none;background:var(--input-bg);color:var(--text)}
-input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(102,126,234,.15)}
-.brow{display:flex;gap:8px;margin-top:8px}
-.btn{flex:1;padding:7px 0;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:all .12s}
-.btn:active{opacity:.8;transform:scale(.98)}
-.bp{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff}
-.bclear{background:linear-gradient(135deg,#ff6b6b,#ee5a5a);color:#fff;margin-left:6px}
-.bstop{background:linear-gradient(135deg,#ff6b6b,#ee5a5a);color:#fff}
-.bo{border:1px solid var(--err);background:var(--card);color:var(--err)}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.info{margin-top:8px;font-size:12px;display:none}
-.iok{color:var(--ok)}.ier{color:var(--err)}
-.pw{margin-top:8px;display:none}
-.pt{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.pf{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:3px;width:0%;transition:width .3s}
-.pl{font-size:11px;color:var(--sub);margin-top:4px;text-align:center}
-.tk{padding:16px 18px;border-bottom:1px solid var(--border2)}
-.tk label{font-size:12px;color:var(--sub);margin-bottom:6px;display:block}
-.tr{display:flex;gap:8px;align-items:center}
-.tr input{flex:1}
-.tr .btn{flex:0 0 auto;padding:7px 16px}
-.hint{font-size:11px;color:var(--sub);margin-top:6px;text-align:center}
-.hd{display:none!important}
-.tst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:#fff;padding:12px 28px;border-radius:10px;font-size:14px;z-index:999;display:none;backdrop-filter:blur(4px)}
+:root{--bg:#f0f2f5;--card:#fff;--text:#1a1a2e;--sub:#8e8ea0;--border:#e8e8ee;--input-bg:#f7f7fc;--input-border:#e0e0e8;--primary:#6366f1;--primary2:#8b5cf6;--ok:#10b981;--err:#ef4444;--warn:#f59e0b;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shadow-lg:0 4px 12px rgba(0,0,0,.08)}
+@media(prefers-color-scheme:dark){:root{--bg:#0f0f1a;--card:#1a1a2e;--text:#e4e4f0;--sub:#6b6b80;--border:#2a2a40;--input-bg:#222240;--input-border:#333355;--shadow:0 1px 3px rgba(0,0,0,.3);--shadow-lg:0 4px 12px rgba(0,0,0,.4)}}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh;padding:0 12px 24px}
+
+.hdr{text-align:center;padding:28px 0 20px}
+.hdr .icon{font-size:32px;margin-bottom:4px}
+.hdr h1{font-size:20px;font-weight:700;letter-spacing:-0.3px}
+.hdr .sub{font-size:12px;color:var(--sub);margin-top:2px}
+
+.log{background:var(--card);border-radius:10px;padding:10px 16px;margin-bottom:12px;font-size:12px;color:var(--sub);box-shadow:var(--shadow);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+
+.card{background:var(--card);border-radius:12px;padding:18px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card-t{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-t .dot{width:8px;height:8px;border-radius:50%;background:var(--primary)}
+
+input[type=password],textarea{width:100%;padding:10px 14px;border:1.5px solid var(--input-border);border-radius:10px;font-size:13px;outline:none;background:var(--input-bg);color:var(--text);transition:border-color .2s}
+textarea{resize:vertical;font-family:'SF Mono',Monaco,'Cascadia Code',monospace;line-height:1.7;min-height:90px}
+input[type=password]:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+
+.token-row{display:flex;gap:8px}
+.token-row input{flex:1}
+.btn{padding:9px 16px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;flex:1}
+.btn-danger{background:var(--err);color:#fff}
+.btn-outline{border:1.5px solid var(--err);background:transparent;color:var(--err)}
+.btn-ghost{border:1.5px solid var(--border);background:transparent;color:var(--sub)}
+.btn:disabled{opacity:.5;pointer-events:none}
+
+.btn-row{display:flex;gap:8px;margin-top:12px}
+
+.progress-wrap{margin-top:12px;display:none}
+.progress-bar{width:100%;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:4px;width:0%;transition:width .4s ease}
+.progress-label{font-size:12px;color:var(--sub);margin-top:6px;text-align:center}
+
+.info{font-size:12px;margin-top:10px;text-align:center;display:none}
+.info-ok{color:var(--ok)}.info-err{color:var(--err)}
+
+/* Stats Row */
+.stats{display:flex;gap:8px}
+.stat{flex:1;text-align:center;padding:10px 6px;border-radius:10px;background:var(--input-bg)}
+.stat .val{font-size:22px;font-weight:700}
+.stat .lbl{font-size:11px;color:var(--sub);margin-top:2px}
+.stat.green .val{color:var(--ok)}.stat.red .val{color:var(--err)}.stat.gray .val{color:var(--sub)}.stat.orange .val{color:var(--warn)}
+
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.85);color:#fff;padding:12px 28px;border-radius:12px;font-size:14px;font-weight:500;z-index:999;display:none;backdrop-filter:blur(8px);pointer-events:none}
 </style>
 </head>
 <body>
 
-<div class="hdr"><span style="font-size:18px">&#x1f48a;</span>条码采集管理<span style="font-size:11px;opacity:.7;margin-left:auto">GitHub 同步</span></div>
+<div class="hdr">
+  <div class="icon">&#x1f48a;</div>
+  <h1>条码采集</h1>
+  <div class="sub">GitHub 实时同步</div>
+</div>
 
 <div class="log" id="log">等待操作...</div>
 
-<div class="tk" id="tk-sec">
-  <label>GitHub Token</label>
-  <div class="tr">
+<!-- Token -->
+<div class="card">
+  <div class="card-t"><span class="dot"></span>GitHub Token</div>
+  <div class="token-row">
     <input id="tk-in" type="password" placeholder="ghp_xxxxxxxxxxxx">
-    <button class="btn bp" onclick="saveTk()">保存</button>
+    <button class="btn btn-primary" onclick="saveTk()" style="flex:none">保存</button>
   </div>
-</div>
-<div id="tk-reset" style="display:none;margin-top:8px">
-  <button class="btn bclear" onclick="resetTk()">重置 Token</button>
-</div>
-  <div class="hint">首次使用需填写，之后自动保存在本地</div>
+  <div class="btn-row">
+    <button class="btn btn-ghost" onclick="resetTk()">重置 Token</button>
+  </div>
 </div>
 
-<div class="sec">
-  <div class="sec-t">手动输入条形码（每行一个）</div>
-  <textarea id="inp" rows="4" placeholder="6978xxxx50073&#10;6923xxxx01644&#10;6976xxxx75042"></textarea>
-  <div class="brow">
-    <button id="main-btn" class="btn bp" onclick="submit()">开始更新</button>
-    <button class="btn bo" onclick="clearBarcodes()">清空任务</button>
+<!-- 条码输入 -->
+<div class="card">
+  <div class="card-t"><span class="dot"></span>条码输入（每行一个）</div>
+  <textarea id="inp" placeholder="6978xxxx50073&#10;6923xxxx01644&#10;6976xxxx75042"></textarea>
+  <div class="btn-row">
+    <button id="main-btn" class="btn btn-primary" onclick="submit()">开始更新</button>
+    <button class="btn btn-outline" onclick="clearBarcodes()">清空任务</button>
   </div>
-  <div class="pw" id="pw"><div class="pt"><div class="pf" id="pf"></div></div><div class="pl" id="pl">等待开始...</div></div>
+  <div class="progress-wrap" id="pw">
+    <div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
+    <div class="progress-label" id="pl">等待扩展处理...</div>
+  </div>
   <div class="info" id="msg"></div>
 </div>
 
-<div class="tst" id="tst"></div>
+<!-- 状态统计 -->
+<div class="card" id="stats-card" style="display:none">
+  <div class="card-t"><span class="dot"></span>处理状态</div>
+  <div class="stats">
+    <div class="stat green"><div class="val" id="s-s">0</div><div class="lbl">成功</div></div>
+    <div class="stat gray"><div class="val" id="s-n">0</div><div class="lbl">无商品</div></div>
+    <div class="stat red"><div class="val" id="s-f">0</div><div class="lbl">失败</div></div>
+    <div class="stat orange"><div class="val" id="s-r">0</div><div class="lbl">剩余</div></div>
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
 
 <script>
 var O='yjy-pgy',R='barcode-data',F='barcodes.json',C='control.json';
@@ -82,17 +114,16 @@ var pollTimer=null,total=0,totalKey='gh_total',remaining=0,isRunning=false,submi
 
 function $(i){return document.getElementById(i)}
 function tk(){return localStorage.getItem('gh_token')||''}
-function saveTk(){var t=$('tk-in').value.trim();if(!t)return toast('请输入Token');localStorage.setItem('gh_token',t);toast('Token已保存');chk()}
-function resetTk(){localStorage.removeItem('gh_token');$('tk-in').value='';toast('Token已清除');$('tk-sec').classList.remove('hd');$('tk-reset').style.display='none';clearSubmitted();isRunning=false;var p=$('pw');if(p)p.style.display='none'}
-function loadTotal(){var t=parseInt(localStorage.getItem(totalKey))||0;return t}
+function saveTk(){var t=$('tk-in').value.trim();if(!t)return toast('请输入Token');localStorage.setItem('gh_token',t);toast('Token已保存');loadPend()}
+function resetTk(){localStorage.removeItem('gh_token');$('tk-in').value='';toast('Token已清除');clearSubmitted();isRunning=false;$('pw').style.display='none';$('stats-card').style.display='none';$('main-btn').className='btn btn-primary';$('main-btn').textContent='开始更新'}
+function loadTotal(){return parseInt(localStorage.getItem(totalKey))||0}
 function saveTotal(t){localStorage.setItem(totalKey,t)}
 function loadSubmitted(){try{var s=localStorage.getItem(submittedKey);return s?JSON.parse(s):[]}catch(e){return[]}}
 function saveSubmitted(codes){localStorage.setItem(submittedKey,JSON.stringify(codes))}
 function clearSubmitted(){localStorage.removeItem(submittedKey);localStorage.removeItem(totalKey)}
-function chk(){var t=tk();$('tk-sec').classList[t?'add':'remove']('hd');$('tk-reset').style.display=t?'block':'none';if(t)loadPend()}
-function toast(m,d){d=d||1500;var t=$('tst');t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},d)}
+function toast(m,d){d=d||2000;var t=$('tst');t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},d)}
 function log(m){$('log').textContent='['+new Date().toLocaleTimeString()+'] '+m}
-function msg(m,ok){var e=$('msg');e.style.display='block';e.textContent=m;e.className='info '+(ok?'iok':'ier');setTimeout(function(){e.style.display='none'},4000)}
+function msg(m,ok){var e=$('msg');e.style.display='block';e.textContent=m;e.className='info '+(ok?'info-ok':'info-err');setTimeout(function(){e.style.display='none'},4000)}
 
 function api(p,o){var h={'Accept':'application/vnd.github.v3+json'},t=tk();if(t)h['Authorization']='token '+t;if(o&&o.h)for(var k in o.h)h[k]=o.h[k];return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?v='+Date.now(),{method:(o&&o.m)||'GET',headers:h,body:o&&o.b?JSON.stringify(o.b):undefined}).then(function(r){return r.json()})}
 function parse(c){if(!c)return null;try{return JSON.parse(decodeURIComponent(escape(atob(c))))}catch(e){return null}}
@@ -100,35 +131,23 @@ function parse(c){if(!c)return null;try{return JSON.parse(decodeURIComponent(esc
 function loadPend(){
   total=loadTotal();
   submittedCodes=loadSubmitted();
-  // 恢复输入框内容
-  if(submittedCodes.length>0){
-    $('inp').value=submittedCodes.join('\n');
-  }
+  if(submittedCodes.length>0)$('inp').value=submittedCodes.join('\n');
   api(F).then(function(f){
     var a=parse(f.content);
     var n=Array.isArray(a)?a.length:0;
-    remaining=n;
+    remaining=n;$('s-r').textContent=n;$('stats-card').style.display='block';
     if(n>0)log('队列中有 '+n+' 个条码等待处理');
     else if(total>0){
-      log('总任务 '+total+' 个，已处理 '+(total-n)+' 个');
-    // 全部跑完，不清除条码，保留状态显示
-      if(n===0&&submittedCodes.length>0&&total>0){
-        $('inp').value='';
-        toast('全部处理完成');
-      }
+      log('总任务 '+total+' 个，已全部完成');
+      if(submittedCodes.length>0){$('inp').value='';toast('全部处理完成')}
     }
   }).catch(function(){total=loadTotal()})
 }
 
 function submit(){
-  if(isRunning){
-    stopUpdate();
-    return;
-  }
-  
-  var t=tk();if(!t){toast('请先配置Token');chk();return}
+  if(isRunning){stopUpdate();return}
+  var t=tk();if(!t){toast('请先配置Token');return}
   var inp=$('inp'),btn=$('main-btn'),txt=inp.value.trim();
-  
   if(txt){
     var codes=[...new Set(txt.split(/[\n,\s]+/).map(function(s){return s.trim()}).filter(Boolean))];
     if(!codes.length)return toast('请输入有效条码');
@@ -139,107 +158,55 @@ function submit(){
       ex.push.apply(ex,nc);
       return api(F,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'添加 '+nc.length+' 个条码',content:btoa(unescape(encodeURIComponent(JSON.stringify(ex,null,2)))),sha:f.sha}}).then(function(r){return{r:r,n:nc.length,t:codes.length,codes:codes}});
     }).then(function(d){
-      if(d.r.content){
-        submittedCodes=d.codes;
-        saveSubmitted(submittedCodes);
-        msg('已提交 '+d.t+' 个条码',true);log('已提交 '+d.t+' 个条码');
-        total=d.t;saveTotal(total);
-        startUpdate();
-      }else{msg('提交失败',false);btn.disabled=false;btn.textContent='开始更新'}
+      if(d.r.content){submittedCodes=d.codes;saveSubmitted(submittedCodes);total=d.t;saveTotal(total);startUpdate()}else{msg('提交失败',false);btn.disabled=false;btn.textContent='开始更新'}
     }).catch(function(e){msg('提交失败: '+e.message,false);btn.disabled=false;btn.textContent='开始更新'})
-  }else{
-    startUpdate();
-  }
+  }else{startUpdate()}
 }
 
 function startUpdate(){
-  var t=tk();if(!t){toast('请先配置Token');return}
-  var btn=$('main-btn');
-  btn.className='btn bstop';
-  btn.textContent='停止更新';
-  btn.disabled=false;
-  $('pw').style.display='block';
-  $('pf').style.width='0%';
-  $('pl').textContent='等待扩展处理...';
-  isRunning=true;
-  log('等待扩展处理...');
-  // 通过 GitHub control.json 通知扩展恢复处理
-  var content=btoa(unescape(encodeURIComponent(JSON.stringify({action:'resume',time:Date.now()}))));
-  doPut(C,content);
-  loadPend();
-  startPoll();
+  var t=tk();if(!t)return;
+  var btn=$('main-btn');btn.className='btn btn-danger';btn.textContent='停止更新';btn.disabled=false;
+  $('pw').style.display='block';$('pf').style.width='0%';$('pl').textContent='等待扩展处理...';
+  isRunning=true;log('等待扩展处理...');
+  doPut(C,btoa(unescape(encodeURIComponent(JSON.stringify({action:'resume',time:Date.now()})))));
+  loadPend();startPoll();
 }
 
 function doPut(p,content){
   var t=tk(),h={'Authorization':'token '+t,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'};
   api(p).then(function(f){
-    var sha=f.sha||'';
-    var body={message:'Resume processing',content:content};
+    var sha=f.sha||'',body={message:'Resume processing',content:content};
     if(sha)body.sha=sha;
     return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?v='+Date.now(),{method:'PUT',headers:h,body:JSON.stringify(body)});
   }).then(function(r){return r.json()}).then(function(d){
     if(d.sha||d.commit){log('已通知扩展');return}
-    // SHA conflict, retry once
     return api(p).then(function(f2){
       var body2={message:'Resume processing',content:content};
       if(f2.sha)body2.sha=f2.sha;
       return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?v='+Date.now(),{method:'PUT',headers:h,body:JSON.stringify(body2)});
     });
-  }).catch(function(e){
-    console.error('doPut error:',e);
-  });
+  }).catch(function(e){console.error('doPut error:',e)});
 }
 
 function stopUpdate(){
-  if(pollTimer){clearInterval(pollTimer);pollTimer=null;}
+  if(pollTimer){clearInterval(pollTimer);pollTimer=null}
   isRunning=false;
-  // 不清空 submittedCodes，保留条码以便继续使用
-  var btn=$('main-btn');
-  btn.className='btn bp';
-  btn.textContent='开始更新';
-  $('pw').style.display='none';
-  log('已停止轮询');
-  
-  var t=tk();
-  api(C).then(function(f){
-    if(f.sha){
-      return api(C,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Stop update',content:btoa(unescape(encodeURIComponent(JSON.stringify({action:'stop',time:Date.now()})))),sha:f.sha}});
-    }else{
-      return api(C,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Stop update',content:btoa(unescape(encodeURIComponent(JSON.stringify({action:'stop',time:Date.now()}))))}});
-    }
-  }).catch(function(){
-    return api(C,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Stop update',content:btoa(unescape(encodeURIComponent(JSON.stringify({action:'stop',time:Date.now()}))))}});
-  }).then(function(){
-    log('已发送停止命令');
-    toast('已发送停止命令');
-  }).catch(function(){
-    log('发送停止命令失败');
-    toast('发送停止命令失败');
-  });
+  var btn=$('main-btn');btn.className='btn btn-primary';btn.textContent='开始更新';
+  $('pw').style.display='none';log('已停止轮询');
+  toast('已发送停止命令');
 }
 
 function clearBarcodes(){
   var t=tk();if(!t)return toast('请先配置Token');
   if(!confirm('确定要清空所有任务吗？'))return;
-  
   toast('清空中...');
-  
-  // 清空 barcodes.json
   api(F).then(function(f){
     return api(F,{m:'PUT',h:{'Authorization':'token '+t,'Content-Type':'application/json'},b:{message:'Clear all barcodes',content:btoa(unescape(encodeURIComponent(JSON.stringify([],null,2)))),sha:f.sha}});
   }).then(function(){
-    clearSubmitted();
-    submittedCodes=[];
-    total=0;
-    saveTotal(0);
-    $('inp').value='';
-    log('任务已清空');
-    toast('任务已清空');
-    loadPend();
-  }).catch(function(e){
-    log('清空失败');
-    toast('清空失败');
-  });
+    clearSubmitted();submittedCodes=[];total=0;saveTotal(0);
+    $('inp').value='';$('s-r').textContent='0';
+    log('任务已清空');toast('任务已清空');
+  }).catch(function(){log('清空失败');toast('清空失败')});
 }
 
 function startPoll(){
@@ -248,49 +215,46 @@ function startPoll(){
     api(F).then(function(f){
       var a=parse(f.content);
       var currentCodes=(Array.isArray(a)?a:[]).map(function(c){return String(c).trim()});
-      var n=currentCodes.length;
-      remaining=n;
-      
+      var n=currentCodes.length;remaining=n;$('s-r').textContent=n;$('stats-card').style.display='block';
+
       if(submittedCodes.length>0){
         var remainingCodes=submittedCodes.filter(function(c){return currentCodes.indexOf(c)!==-1});
         $('inp').value=remainingCodes.join('\n');
-        if(remainingCodes.length!==submittedCodes.length){
-          submittedCodes=remainingCodes;
-          saveSubmitted(submittedCodes);
-        }
+        if(remainingCodes.length!==submittedCodes.length){submittedCodes=remainingCodes;saveSubmitted(submittedCodes)}
       }
-      
+
       if(total>0){
         var done=total-n;
         var pct=Math.round(done/total*100);
         $('pf').style.width=pct+'%';
         $('pl').textContent='处理中 '+done+'/'+total+' ('+pct+'%)';
         log('处理中... ('+done+'/'+total+')');
-        
+
         if(n===0){
           clearInterval(pollTimer);pollTimer=null;
           $('pf').style.width='100%';
           $('pl').textContent='已完成 '+total+' 个';
+          $('s-r').textContent='0';
           log('全部处理完成');
-          toast('处理完成');
-          var btn=$('main-btn');
-          btn.className='btn bp';
-          btn.textContent='开始更新';
-          $('pw').style.display='none';
-          isRunning=false;
-          // 不清空 submittedCodes，保留状态显示
+          toast('全部处理完成');
+          var btn=$('main-btn');btn.className='btn btn-primary';btn.textContent='开始更新';
+          $('pw').style.display='none';isRunning=false;
           saveTotal(0);total=0;
         }
-      }else{
-        $('pl').textContent='等待扩展处理...';
-      }
+      }else{$('pl').textContent='等待扩展处理...'}
+
+      api('status.json').then(function(f){
+        var r=parse(f.content);var success=0,noGoods=0,fail=0;
+        if(r&&r.barcodes){for(var k in r.barcodes){if(submittedCodes.length>0&&submittedCodes.indexOf(k)===-1)continue;var st=r.barcodes[k]?.status;if(st==='success')success++;else if(st==='noGoods')noGoods++;else if(st==='fail')fail++}}
+        else if(r){var skipKeys=['status','total','done','time'];for(var k in r){if(skipKeys.indexOf(k)!==-1)continue;if(submittedCodes.length>0&&submittedCodes.indexOf(k)===-1)continue;var st=r[k]?.status;if(st==='success')success++;else if(st==='noGoods')noGoods++;else if(st==='fail')fail++}}
+        localStorage.setItem('gh_status',JSON.stringify({s:success,n:noGoods,f:fail,t:Date.now()}));
+        $('s-s').textContent=success;$('s-n').textContent=noGoods;$('s-f').textContent=fail;
+      }).catch(function(){try{var c=JSON.parse(localStorage.getItem('gh_status'));if(c){$('s-s').textContent=c.s||0;$('s-n').textContent=c.n||0;$('s-f').textContent=c.f||0}}catch(e){}});
     }).catch(function(){});
   },3000);
 }
 
-window.onload=function(){
-  var s=tk();if(s)$('tk-in').value=s;chk();
-}
+window.onload=function(){var s=tk();if(s){$('tk-in').value=s;loadPend()}}
 </script>
 </body>
 </html>
