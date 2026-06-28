@@ -11,9 +11,9 @@
       "time": 1782641615226
     },
     "6920190330548": {
-      "status": "fail",
-      "message": "操作超时",
-      "time": 1782642338037
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1782642970533
     },
     "6903919184424": {
       "status": "success",
