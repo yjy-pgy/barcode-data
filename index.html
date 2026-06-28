@@ -30,7 +30,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC'
 main{max-width:500px;margin:0 auto;padding:0 14px;position:relative;z-index:2}
 
 /* 日志条 */
-.log{text-align:center;font-size:12px;color:var(--sub);padding:6px 0;margin-bottom:2px}
+.log{font-size:12px;color:var(--sub);padding:4px 0;margin-bottom:2px;max-height:110px;overflow-y:auto}
+.log-line{padding:3px 0;border-bottom:1px solid var(--border);text-align:center}
+.log-line:last-child{border-bottom:none}
+
+/* Token 重置条 */
+#tk-reset-bar{text-align:center;margin-bottom:10px}
+#tk-reset-bar .btn{width:100%}
 
 /* 卡片 */
 .c{background:var(--card);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
@@ -87,18 +93,21 @@ textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,122,255,.
 
 <main>
 
-<div class="log" id="log">等待操作...</div>
+<div class="log" id="log">
+  <div class="log-line">等待操作...</div>
+</div>
 
 <!-- Token -->
-<div class="c">
+<div class="c" id="tk-card">
   <div class="ct"><i></i>GitHub Token</div>
   <div class="tk-r">
     <input id="tk-in" type="password" placeholder="ghp_xxxxxxxxxxxx">
     <button class="btn btn-a" onclick="saveTk()" style="flex:none">保存</button>
   </div>
-  <div class="br">
-    <button class="btn btn-c" onclick="resetTk()" style="flex:1">重置 Token</button>
-  </div>
+</div>
+<!-- Token 已保存时的重置条 -->
+<div id="tk-reset-bar" style="display:none">
+  <button class="btn btn-c" onclick="resetTk()">重置 Token</button>
 </div>
 
 <!-- 条码输入 -->
@@ -137,15 +146,15 @@ var pollTimer=null,total=0,totalKey='gh_total',remaining=0,isRunning=false,submi
 
 function $(i){return document.getElementById(i)}
 function tk(){return localStorage.getItem('gh_token')||''}
-function saveTk(){var t=$('tk-in').value.trim();if(!t)return toast('请输入 Token');localStorage.setItem('gh_token',t);toast('已保存');loadPend()}
-function resetTk(){localStorage.removeItem('gh_token');$('tk-in').value='';clearSubmitted();isRunning=false;$('pw').style.display='none';$('stats-card').style.display='none';$('main-btn').className='btn btn-a';$('main-btn').textContent='开始更新';toast('已重置')}
+function saveTk(){var t=$('tk-in').value.trim();if(!t)return toast('请输入 Token');localStorage.setItem('gh_token',t);$('tk-card').style.display='none';$('tk-reset-bar').style.display='block';toast('已保存');loadPend()}
+function resetTk(){localStorage.removeItem('gh_token');$('tk-in').value='';$('tk-card').style.display='block';$('tk-reset-bar').style.display='none';clearSubmitted();isRunning=false;$('pw').style.display='none';$('stats-card').style.display='none';$('main-btn').className='btn btn-a';$('main-btn').textContent='开始更新';toast('已重置')}
 function loadTotal(){return parseInt(localStorage.getItem(totalKey))||0}
 function saveTotal(t){localStorage.setItem(totalKey,t)}
 function loadSubmitted(){try{var s=localStorage.getItem(submittedKey);return s?JSON.parse(s):[]}catch(e){return[]}}
 function saveSubmitted(codes){localStorage.setItem(submittedKey,JSON.stringify(codes))}
 function clearSubmitted(){localStorage.removeItem(submittedKey);localStorage.removeItem(totalKey)}
 function toast(m,d){d=d||1800;var t=$('tst');t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},d)}
-function log(m){$('log').textContent='['+new Date().toLocaleTimeString()+'] '+m}
+function log(m){var c=$('log'),ls=c.querySelectorAll('.log-line');c.innerHTML='';var lines=m.split('\n');lines.forEach(function(l){var d=document.createElement('div');d.className='log-line';d.textContent='['+new Date().toLocaleTimeString()+'] '+l;c.appendChild(d)});while(c.children.length>5)c.removeChild(c.firstChild);c.scrollTop=c.scrollHeight}
 function msg(m,ok){var e=$('msg');e.style.display='block';e.textContent=m;e.className='info '+(ok?'ok':'er');setTimeout(function(){e.style.display='none'},3500)}
 
 function api(p,o){var h={'Accept':'application/vnd.github.v3+json'},t=tk();if(t)h['Authorization']='token '+t;if(o&&o.h)for(var k in o.h)h[k]=o.h[k];return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?v='+Date.now(),{method:(o&&o.m)||'GET',headers:h,body:o&&o.b?JSON.stringify(o.b):undefined}).then(function(r){return r.json()})}
@@ -260,7 +269,7 @@ function startPoll(){
   },3000);
 }
 
-window.onload=function(){var s=tk();if(s){$('tk-in').value=s;loadPend()}}
+window.onload=function(){var s=tk();if(s){$('tk-in').value=s;$('tk-card').style.display='none';$('tk-reset-bar').style.display='block';loadPend()}}
 </script>
 </body>
 </html>
