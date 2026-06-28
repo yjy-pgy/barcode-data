@@ -184,10 +184,10 @@ function submit(){
   if(isRunning){stopUpdate();return}
   var t=tk();if(!t){toast('请先配置 Token');return}
   var inp=$('inp'),btn=$('main-btn'),txt=inp.value.trim();
-  if(txt){
-    var codes=[...new Set(txt.split(/[\n,\s]+/).map(function(s){return s.trim()}).filter(Boolean))];
-    if(!codes.length)return toast('请输入有效条码');
-    btn.disabled=true;btn.textContent='提交中...';$('msg').style.display='none';
+  if(!txt){toast('请输入条码');return}
+  var codes=[...new Set(txt.split(/[\n,\s]+/).map(function(s){return s.trim()}).filter(Boolean))];
+  if(!codes.length)return toast('请输入有效条码');
+  btn.disabled=true;btn.textContent='提交中...';$('msg').style.display='none';
     api(F).then(function(f){
       var ex=parse(f.content);if(!Array.isArray(ex))ex=[];
       var nc=codes.filter(function(c){return ex.indexOf(c)===-1});
@@ -198,7 +198,6 @@ function submit(){
         msg('已提交 '+d.t+' 条',true);startUpdate()}
       else{msg('提交失败',false);btn.disabled=false;btn.textContent='开始更新'}
     }).catch(function(e){msg('提交失败: '+e.message,false);btn.disabled=false;btn.textContent='开始更新'})
-  }else startUpdate();
 }
 
 function startUpdate(){
@@ -230,6 +229,7 @@ function stopUpdate(){
 
 function clearBarcodes(){
   var t=tk();if(!t)return toast('请先配置 Token');
+  if(!$('inp').value.trim()&&(!submittedCodes||submittedCodes.length===0))return toast('当前无数据，无法操作');
   if(!confirm('确定清空所有任务吗？'))return;
   toast('清空中...');
   api(F).then(function(f){
