@@ -224,6 +224,7 @@ function stopUpdate(){
   isRunning=false;
   $('main-btn').textContent='开始更新';
   $('pw').style.display='none';log('已停止');toast('已停止');
+  doPut(C,btoa(unescape(encodeURIComponent(JSON.stringify({action:'stop',time:Date.now()})))));
 }
 
 function clearBarcodes(){
