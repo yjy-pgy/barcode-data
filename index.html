@@ -147,14 +147,14 @@ var pollTimer=null,total=0,totalKey='gh_total',remaining=0,isRunning=false,submi
 function $(i){return document.getElementById(i)}
 function tk(){return localStorage.getItem('gh_token')||''}
 function saveTk(){var t=$('tk-in').value.trim();if(!t)return toast('请输入 Token');localStorage.setItem('gh_token',t);$('tk-card').style.display='none';$('tk-reset-bar').style.display='block';toast('已保存');loadPend()}
-function resetTk(){localStorage.removeItem('gh_token');$('tk-in').value='';$('tk-card').style.display='block';$('tk-reset-bar').style.display='none';clearSubmitted();isRunning=false;$('pw').style.display='none';$('stats-card').style.display='none';$('main-btn').className='btn btn-a';$('main-btn').textContent='开始更新';toast('已重置')}
+function resetTk(){localStorage.removeItem('gh_token');$('tk-in').value='';$('tk-card').style.display='block';$('tk-reset-bar').style.display='none';clearSubmitted();isRunning=false;$('pw').style.display='none';$('stats-card').style.display='none';$('main-btn').textContent='开始更新';toast('已重置')}
 function loadTotal(){return parseInt(localStorage.getItem(totalKey))||0}
 function saveTotal(t){localStorage.setItem(totalKey,t)}
 function loadSubmitted(){try{var s=localStorage.getItem(submittedKey);return s?JSON.parse(s):[]}catch(e){return[]}}
 function saveSubmitted(codes){localStorage.setItem(submittedKey,JSON.stringify(codes))}
 function clearSubmitted(){localStorage.removeItem(submittedKey);localStorage.removeItem(totalKey)}
 function toast(m,d){d=d||1800;var t=$('tst');t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},d)}
-function log(m){var c=$('log'),ls=c.querySelectorAll('.log-line');c.innerHTML='';var lines=m.split('\n');lines.forEach(function(l){var d=document.createElement('div');d.className='log-line';d.textContent='['+new Date().toLocaleTimeString()+'] '+l;c.appendChild(d)});while(c.children.length>5)c.removeChild(c.firstChild);c.scrollTop=c.scrollHeight}
+function log(m){var c=$('log');var d=document.createElement('div');d.className='log-line';d.textContent='['+new Date().toLocaleTimeString()+'] '+m;c.appendChild(d);while(c.children.length>8)c.removeChild(c.firstChild);c.scrollTop=c.scrollHeight}
 function msg(m,ok){var e=$('msg');e.style.display='block';e.textContent=m;e.className='info '+(ok?'ok':'er');setTimeout(function(){e.style.display='none'},3500)}
 
 function api(p,o){var h={'Accept':'application/vnd.github.v3+json'},t=tk();if(t)h['Authorization']='token '+t;if(o&&o.h)for(var k in o.h)h[k]=o.h[k];return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?v='+Date.now(),{method:(o&&o.m)||'GET',headers:h,body:o&&o.b?JSON.stringify(o.b):undefined}).then(function(r){return r.json()})}
@@ -195,7 +195,7 @@ function submit(){
 
 function startUpdate(){
   var t=tk();if(!t)return;
-  var btn=$('main-btn');btn.className='btn btn-b';btn.textContent='停止';btn.disabled=false;
+  var btn=$('main-btn');btn.textContent='停止';btn.disabled=false;
   $('pw').style.display='block';$('pf').style.width='0%';$('pl').textContent='等待扩展处理...';
   isRunning=true;log('已提交，等待处理...');
   doPut(C,btoa(unescape(encodeURIComponent(JSON.stringify({action:'resume',time:Date.now()})))));
@@ -216,7 +216,7 @@ function doPut(p,content){
 function stopUpdate(){
   if(pollTimer){clearInterval(pollTimer);pollTimer=null}
   isRunning=false;
-  $('main-btn').className='btn btn-a';$('main-btn').textContent='开始更新';
+  $('main-btn').textContent='开始更新';
   $('pw').style.display='none';log('已停止');toast('已停止');
 }
 
@@ -253,7 +253,7 @@ function startPoll(){
           clearInterval(pollTimer);pollTimer=null;
           $('pf').style.width='100%';$('pl').textContent='全部完成 '+total+' 条';
           $('s-r').textContent='0';log('全部完成');toast('处理完成');
-          $('main-btn').className='btn btn-a';$('main-btn').textContent='开始更新';
+          $('main-btn').textContent='开始更新';
           $('pw').style.display='none';isRunning=false;saveTotal(0);total=0;
         }
       }else $('pl').textContent='等待扩展处理...';
