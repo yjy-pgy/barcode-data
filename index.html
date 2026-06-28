@@ -170,7 +170,9 @@ function parse(c){if(!c)return null;try{return JSON.parse(decodeURIComponent(esc
 
 function loadPend(){
   total=loadTotal();
-  submittedCodes=loadSubmitted();
+  // 不覆盖已有的 submittedCodes（startUpdate 时可能被覆盖为空）
+  var saved=loadSubmitted();
+  if(saved.length>0 && submittedCodes.length===0) submittedCodes=saved;
   if(submittedCodes.length>0)$('inp').value=submittedCodes.join('\n');
   api(F).then(function(f){
     var a=parse(f.content),n=Array.isArray(a)?a.length:0;
