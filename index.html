@@ -29,13 +29,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC'
 
 main{max-width:500px;margin:0 auto;padding:0 14px;position:relative;z-index:2;margin-top:-8px}
 
-/* 日志条 */
-.log{font-size:12px;color:var(--sub);padding:4px 0;margin-bottom:2px;max-height:110px;overflow-y:auto}
-.log-line{padding:3px 0;border-bottom:1px solid var(--border);text-align:center}
-.log-line:last-child{border-bottom:none}
+/* 日志区域 */
+.log-wrap{background:var(--card);border-radius:14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(0,0,0,.04);overflow:hidden}
+.log-hd{font-size:12px;font-weight:600;color:var(--sub);padding:10px 16px 6px;text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center}
+.log-body{font-size:12px;color:var(--sub);padding:0 14px 10px;max-height:120px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.log-item{display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.log-item:last-child{border-bottom:none}
+.log-time{color:var(--sub);white-space:nowrap;opacity:.6;min-width:62px;text-align:right;font-variant-numeric:tabular-nums}
+.log-msg{color:var(--text);word-break:break-all;line-height:1.4}
+.log-body::-webkit-scrollbar{width:3px}
+.log-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
 /* Token 重置条 */
-#tk-reset-bar{text-align:center;margin-bottom:10px}
+#tk-reset-bar{text-align:center;margin-top:10px;margin-bottom:10px}
 #tk-reset-bar .btn{width:100%}
 
 /* 卡片 */
@@ -93,8 +99,9 @@ textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,122,255,.
 
 <main>
 
-<div class="log" id="log">
-  <div class="log-line">等待操作...</div>
+<div class="log-wrap">
+  <div class="log-hd">操作日志</div>
+  <div class="log-body" id="log"><div class="log-item"><span class="log-time">--:--</span><span class="log-msg">等待操作...</span></div></div>
 </div>
 
 <!-- Token -->
@@ -104,10 +111,6 @@ textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,122,255,.
     <input id="tk-in" type="password" placeholder="ghp_xxxxxxxxxxxx">
     <button class="btn btn-a" onclick="saveTk()" style="flex:none">保存</button>
   </div>
-</div>
-<!-- Token 已保存时的重置条 -->
-<div id="tk-reset-bar" style="display:none">
-  <button class="btn btn-c" onclick="resetTk()">重置 Token</button>
 </div>
 
 <!-- 条码输入 -->
@@ -136,6 +139,11 @@ textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,122,255,.
   </div>
 </div>
 
+<!-- 重置 Token 按钮 -->
+<div id="tk-reset-bar" style="display:none;margin-bottom:24px">
+  <button class="btn btn-c" onclick="resetTk()" style="width:100%">重置 Token</button>
+</div>
+
 </main>
 
 <div class="tt" id="tst"></div>
@@ -154,7 +162,7 @@ function loadSubmitted(){try{var s=localStorage.getItem(submittedKey);return s?J
 function saveSubmitted(codes){localStorage.setItem(submittedKey,JSON.stringify(codes))}
 function clearSubmitted(){localStorage.removeItem(submittedKey);localStorage.removeItem(totalKey)}
 function toast(m,d){d=d||1800;var t=$('tst');t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},d)}
-function log(m){var c=$('log');var d=document.createElement('div');d.className='log-line';d.textContent='['+new Date().toLocaleTimeString()+'] '+m;c.appendChild(d);while(c.children.length>8)c.removeChild(c.firstChild);c.scrollTop=c.scrollHeight}
+function log(m){var c=$('log');var d=document.createElement('div');d.className='log-item';var now=new Date();var ts=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');d.innerHTML='<span class="log-time">'+ts+'</span><span class="log-msg">'+m+'</span>';c.appendChild(d);while(c.children.length>20)c.removeChild(c.firstChild);c.scrollTop=c.scrollHeight}
 function msg(m,ok){var e=$('msg');e.style.display='block';e.textContent=m;e.className='info '+(ok?'ok':'er');setTimeout(function(){e.style.display='none'},3500)}
 
 function api(p,o){var h={'Accept':'application/vnd.github.v3+json'},t=tk();if(t)h['Authorization']='token '+t;if(o&&o.h)for(var k in o.h)h[k]=o.h[k];return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?v='+Date.now(),{method:(o&&o.m)||'GET',headers:h,body:o&&o.b?JSON.stringify(o.b):undefined}).then(function(r){return r.json()})}
