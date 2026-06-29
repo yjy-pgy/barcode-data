@@ -215,7 +215,7 @@ function doPut(p,content){
     if(sha)body.sha=sha;
     return fetch('https://api.github.com/repos/'+O+'/'+R+'/contents/'+p+'?v='+Date.now(),{method:'PUT',headers:h,body:JSON.stringify(body)});
   }).then(function(r){return r.json()}).then(function(d){
-    if(!d.sha&&!d.commit){log('操作重试中...');return doPut(p,content)}
+    if(!d.sha&&!d.commit){log('通知拓展恢复中...');return doPut(p,content)}
   }).catch(function(e){console.error(e)});
 }
 
