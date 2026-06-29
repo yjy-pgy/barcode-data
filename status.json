@@ -14,6 +14,11 @@
       "status": "noGoods",
       "message": "无商品",
       "time": 1782706627975
+    },
+    "6951024317954": {
+      "status": "success",
+      "message": "处理成功",
+      "time": 1782706642455
     }
   }
 }
