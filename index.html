@@ -237,6 +237,7 @@ function clearBarcodes(){
   }).then(function(){
     clearSubmitted();submittedCodes=[];total=0;saveTotal(0);
     $('inp').value='';$('s-r').textContent='0';log('已清空');toast('已清空');
+    doPut(C,btoa(unescape(encodeURIComponent(JSON.stringify({action:'clear',time:Date.now()})))));
   }).catch(function(){log('清空失败');toast('清空失败')});
 }
 
