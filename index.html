@@ -84,9 +84,16 @@ textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,122,255,.
 /* Toast */
 .tt{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.82);color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:500;z-index:999;display:none;backdrop-filter:blur(8px);pointer-events:none}
 
-/* Token 行内样式 */
-.tk-r{display:flex;gap:8px;align-items:center}
-.tk-r input{flex:1}
+/* 连接状态 */
+.cs{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;font-size:12px;font-weight:500;position:absolute;top:14px;right:14px}
+.cs.online{background:rgba(52,199,89,.15);color:#34c759}
+.cs.offline{background:rgba(255,59,48,.15);color:#ff3b30}
+.cs.waiting{background:rgba(255,149,0,.15);color:#ff9500}
+.cs .dot{width:6px;height:6px;border-radius:50%;animation:pulse 2s infinite}
+.cs.online .dot{background:#34c759}
+.cs.offline .dot{background:#ff3b30}
+.cs.waiting .dot{background:#ff9500}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 </style>
 </head>
 <body>
@@ -95,6 +102,7 @@ textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,122,255,.
   <div class="icon">&#128138;</div>
   <h1>条码采集</h1>
   <div class="sub">GitHub 实时同步</div>
+  <div class="cs offline" id="conn-status"><span class="dot"></span><span>未连接</span></div>
 </div>
 
 <main>
@@ -150,7 +158,7 @@ textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,122,255,.
 
 <script>
 var O='yjy-pgy',R='barcode-data',F='barcodes.json',C='control.json';
-var pollTimer=null,total=0,totalKey='gh_total',remaining=0,isRunning=false,submittedCodes=[],submittedKey='gh_submitted';
+var pollTimer=null,total=0,totalKey='gh_total',remaining=0,isRunning=false,submittedCodes=[],submittedKey='gh_submitted',connStatus='offline',connCheckTimer=null;
 
 function $(i){return document.getElementById(i)}
 function tk(){return localStorage.getItem('gh_token')||''}
@@ -176,7 +184,32 @@ function loadPend(){
     var a=parse(f.content),n=Array.isArray(a)?a.length:0;
     remaining=n;$('s-r').textContent=n;$('stats-card').style.display='block';
     if(n>0)log(n+' 个条码等待处理');
-  }).catch(function(){total=loadTotal()})
+  }).catch(function(){total=loadTotal()});
+}
+
+function updateConnStatus(status){
+  connStatus=status;
+  var el=$('conn-status');
+  if(!el)return;
+  el.className='cs '+status;
+  var text=status==='online'?'已连接':status==='waiting'?'连接中...':'未连接';
+  el.innerHTML='<span class="dot"></span><span>'+text+'</span>';
+}
+
+function checkConnection(){
+  var t=tk();if(!t){updateConnStatus('offline');return}
+  api('status.json').then(function(f){
+    var r=parse(f.content);
+    if(r&&r.barcodes){
+      var recentCount=0;
+      for(var k in r.barcodes){
+        if(r.barcodes[k].time&&Date.now()-r.barcodes[k].time<35000)recentCount++;
+      }
+      updateConnStatus(recentCount>0?'online':'waiting');
+    }else{
+      updateConnStatus('waiting');
+    }
+  }).catch(function(){updateConnStatus('offline')});
 }
 
 function submit(){
@@ -278,7 +311,7 @@ function startPoll(){
   },3000);
 }
 
-window.onload=function(){var s=tk();if(s){$('tk-in').value=s;$('tk-card').style.display='none';$('tk-reset-bar').style.display='block';loadPend()}}
+window.onload=function(){var s=tk();if(s){$('tk-in').value=s;$('tk-card').style.display='none';$('tk-reset-bar').style.display='block';loadPend()}checkConnection();connCheckTimer=setInterval(checkConnection,5000)}
 </script>
 </body>
 </html>
