@@ -1,5 +1,10 @@
 {
   "barcodes": {
+    "6934710214812": {
+      "status": "success",
+      "message": "处理成功",
+      "time": 1783169441080
+    },
     "6902858606882": {
       "status": "success",
       "message": "处理成功",
@@ -20,16 +25,11 @@
       "message": "处理成功",
       "time": 1783169190310
     },
-    "6934710214812": {
-      "status": "success",
-      "message": "处理成功",
-      "time": 1783169441080
-    },
     "6972841461682": {
       "status": "success",
       "message": "处理成功",
       "time": 1783168541053
     }
   },
-  "heartbeat": 1783171566909
+  "heartbeat": 1783171662153
 }
