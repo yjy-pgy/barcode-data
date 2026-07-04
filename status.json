@@ -1,4 +1,20 @@
 {
-  "barcodes": {},
-  "heartbeat": 1783168412702
+  "barcodes": {
+    "6972841461682": {
+      "status": "fail",
+      "message": "操作超时",
+      "time": 1783168418993
+    },
+    "69731308400582222": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1783168425163
+    },
+    "697313084005811111": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1783168425164
+    }
+  },
+  "heartbeat": 1783168442703
 }
