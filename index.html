@@ -192,23 +192,14 @@ function updateConnStatus(status){
   var el=$('conn-status');
   if(!el)return;
   el.className='cs '+status;
-  var text=status==='online'?'已连接':status==='waiting'?'连接中...':'未连接';
+  var text=status==='online'?'已连接':'未连接';
   el.innerHTML='<span class="dot"></span><span>'+text+'</span>';
 }
 
 function checkConnection(){
   var t=tk();if(!t){updateConnStatus('offline');return}
   api('status.json').then(function(f){
-    var r=parse(f.content);
-    if(r&&r.barcodes){
-      var recentCount=0;
-      for(var k in r.barcodes){
-        if(r.barcodes[k].time&&Date.now()-r.barcodes[k].time<35000)recentCount++;
-      }
-      updateConnStatus(recentCount>0?'online':'waiting');
-    }else{
-      updateConnStatus('waiting');
-    }
+    updateConnStatus(f&&(f.content||f.sha)?'online':'offline');
   }).catch(function(){updateConnStatus('offline')});
 }
 
