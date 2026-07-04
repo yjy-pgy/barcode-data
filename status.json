@@ -1,1 +1,10 @@
-{"barcodes":{}}
+{
+  "barcodes": {
+    "6902858606882": {
+      "status": "success",
+      "message": "处理成功",
+      "time": 1783179279848
+    }
+  },
+  "heartbeat": 1783179287472
+}
