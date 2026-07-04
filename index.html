@@ -199,7 +199,17 @@ function updateConnStatus(status){
 function checkConnection(){
   var t=tk();if(!t){updateConnStatus('offline');return}
   api('status.json').then(function(f){
-    updateConnStatus(f&&(f.content||f.sha)?'online':'offline');
+    if(!f||!f.content){updateConnStatus('offline');return}
+    var r=parse(f.content);
+    var isOnline=false;
+    if(r&&r.heartbeat){
+      isOnline=Date.now()-r.heartbeat<35000;
+    }else if(r&&r.barcodes){
+      for(var k in r.barcodes){
+        if(r.barcodes[k].time&&Date.now()-r.barcodes[k].time<35000){isOnline=true;break}
+      }
+    }
+    updateConnStatus(isOnline?'online':'offline');
   }).catch(function(){updateConnStatus('offline')});
 }
 
