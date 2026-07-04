@@ -1,4 +1,20 @@
 {
-  "barcodes": {},
-  "heartbeat": 1783192640818
+  "barcodes": {
+    "6930397802458": {
+      "status": "success",
+      "message": "处理成功",
+      "time": 1783192644482
+    },
+    "69731308400582222": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1783192651760
+    },
+    "697313084005811111": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1783192651761
+    }
+  },
+  "heartbeat": 1783192670778
 }
