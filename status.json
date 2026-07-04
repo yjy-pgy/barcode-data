@@ -1,5 +1,10 @@
 {
   "barcodes": {
+    "6902858606882": {
+      "status": "fail",
+      "message": "操作超时",
+      "time": 1783149979555
+    },
     "69731308400582222": {
       "status": "noGoods",
       "message": "无商品",
