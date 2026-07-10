@@ -14,7 +14,17 @@
       "status": "success",
       "message": "处理成功",
       "time": 1783676898385
+    },
+    "6921675344180": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1783676922258
+    },
+    "4987312159359": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1783676922260
     }
   },
-  "heartbeat": 1783676919803
+  "heartbeat": 1783676949798
 }
