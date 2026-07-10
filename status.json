@@ -1,1 +1,10 @@
-{"barcodes":{}}
+{
+  "barcodes": {
+    "6910787601946": {
+      "status": "fail",
+      "message": "通道错误",
+      "time": 1783677586626
+    }
+  },
+  "heartbeat": 1783677602703
+}
