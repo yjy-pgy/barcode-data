@@ -1,4 +1,10 @@
 {
-  "barcodes": {},
-  "heartbeat": 1783685697553
+  "barcodes": {
+    "6978593263024": {
+      "status": "fail",
+      "message": "操作超时",
+      "time": 1783685727693
+    }
+  },
+  "heartbeat": 1783685727555
 }
