@@ -64,7 +64,27 @@
       "status": "success",
       "message": "处理成功",
       "time": 1785123375026
+    },
+    "6906757010931": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1785123377859
+    },
+    "6978217050030": {
+      "status": "success",
+      "message": "处理成功",
+      "time": 1785123385062
+    },
+    "6936621103513": {
+      "status": "success",
+      "message": "处理成功",
+      "time": 1785123394824
+    },
+    "6975217500503": {
+      "status": "success",
+      "message": "处理成功",
+      "time": 1785123404698
     }
   },
-  "heartbeat": 1785123375071
+  "heartbeat": 1785123405071
 }
