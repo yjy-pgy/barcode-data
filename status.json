@@ -1,15 +1,5 @@
 {
   "barcodes": {
-    "4547691817709": {
-      "status": "success",
-      "message": "处理成功",
-      "time": 1788148101914
-    },
-    "6971726778570": {
-      "status": "success",
-      "message": "处理成功",
-      "time": 1788148115453
-    },
     "69731308400582222": {
       "status": "noGoods",
       "message": "无商品",
@@ -19,6 +9,16 @@
       "status": "noGoods",
       "message": "无商品",
       "time": 1787383806360
+    },
+    "4547691817709": {
+      "status": "success",
+      "message": "处理成功",
+      "time": 1788148101914
+    },
+    "6971726778570": {
+      "status": "success",
+      "message": "处理成功",
+      "time": 1788148115453
     },
     "6933890702485": {
       "status": "success",
@@ -276,5 +276,5 @@
       "time": 1788149010153
     }
   },
-  "heartbeat": 1788149700902
+  "heartbeat": 1788150286547
 }
