@@ -1,5 +1,15 @@
 {
   "barcodes": {
+    "6973004060827": {
+      "status": "fail",
+      "message": "未找到 hashframe iframe",
+      "time": 1791344959686
+    },
+    "6920844097889": {
+      "status": "fail",
+      "message": "未找到 hashframe iframe",
+      "time": 1791344959710
+    },
     "6936930518336": {
       "status": "noGoods",
       "message": "无商品",
@@ -4976,5 +4986,5 @@
       "time": 1791293672804
     }
   },
-  "heartbeat": 1791344387196
+  "heartbeat": 1791344989487
 }
