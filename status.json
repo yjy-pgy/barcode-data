@@ -1,5 +1,10 @@
 {
   "barcodes": {
+    "69752883701731": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793544075900
+    },
     "6917685102247": {
       "status": "noGoods",
       "message": "无商品",
@@ -15,6 +20,11 @@
       "message": "无商品",
       "time": 1793525364677
     },
+    "6925023209251": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793525375003
+    },
     "6958717815414": {
       "status": "noGoods",
       "message": "无商品",
@@ -29,6 +39,206 @@
       "status": "noGoods",
       "message": "无商品",
       "time": 1793519498178
+    },
+    "6909557003592": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519508530
+    },
+    "69700166607791": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519518848
+    },
+    "6978668880002": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519529170
+    },
+    "6975122223399": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519539485
+    },
+    "6976713540161": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519549796
+    },
+    "6975728280093": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519560161
+    },
+    "6940624701478": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519570502
+    },
+    "6976890010068": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519580895
+    },
+    "6945248490142": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519591202
+    },
+    "6909557003714": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519601529
+    },
+    "6937861352488": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519611867
+    },
+    "6938200756486": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519622173
+    },
+    "6917029159142": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519632506
+    },
+    "6944275961960": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519642860
+    },
+    "6975122223306": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519653171
+    },
+    "6975728740504": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519663475
+    },
+    "6975979200086": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519673797
+    },
+    "6947460707855": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519684113
+    },
+    "6974652630295": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519694461
+    },
+    "6937962501259": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519704778
+    },
+    "6921728412163": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519715123
+    },
+    "6937534100484": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519725481
+    },
+    "6970304880070": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519735806
+    },
+    "6934044009016": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519746119
+    },
+    "6934044009009": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519756446
+    },
+    "69277714016801": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519766797
+    },
+    "6973946161842": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519777119
+    },
+    "6935947100725": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519787445
+    },
+    "6901398619451": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519797811
+    },
+    "9999901979023": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519808142
+    },
+    "6924217166974": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519818514
+    },
+    "6975404270080": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519828844
+    },
+    "6915158222430": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519839167
+    },
+    "69359161004801": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519849498
+    },
+    "6921740175657": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519859817
+    },
+    "6975151280349": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519870189
+    },
+    "6934832302633": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519880551
+    },
+    "6975728740597": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519890885
+    },
+    "6977526855145": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519901248
+    },
+    "6930201762572": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793519911604
     },
     "6908260519116": {
       "status": "noGoods",
@@ -5769,212 +5979,7 @@
       "status": "noGoods",
       "message": "无商品",
       "time": 1793348974014
-    },
-    "6909557003592": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519508530
-    },
-    "69700166607791": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519518848
-    },
-    "6978668880002": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519529170
-    },
-    "6975122223399": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519539485
-    },
-    "6976713540161": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519549796
-    },
-    "6975728280093": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519560161
-    },
-    "6940624701478": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519570502
-    },
-    "6976890010068": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519580895
-    },
-    "6945248490142": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519591202
-    },
-    "6909557003714": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519601529
-    },
-    "6937861352488": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519611867
-    },
-    "6938200756486": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519622173
-    },
-    "6917029159142": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519632506
-    },
-    "6944275961960": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519642860
-    },
-    "6975122223306": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519653171
-    },
-    "6975728740504": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519663475
-    },
-    "6975979200086": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519673797
-    },
-    "6947460707855": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519684113
-    },
-    "6974652630295": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519694461
-    },
-    "6937962501259": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519704778
-    },
-    "6921728412163": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519715123
-    },
-    "6937534100484": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519725481
-    },
-    "6970304880070": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519735806
-    },
-    "6934044009016": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519746119
-    },
-    "6934044009009": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519756446
-    },
-    "69277714016801": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519766797
-    },
-    "6973946161842": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519777119
-    },
-    "6935947100725": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519787445
-    },
-    "6901398619451": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519797811
-    },
-    "9999901979023": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519808142
-    },
-    "6924217166974": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519818514
-    },
-    "6975404270080": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519828844
-    },
-    "6915158222430": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519839167
-    },
-    "69359161004801": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519849498
-    },
-    "6921740175657": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519859817
-    },
-    "6975151280349": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519870189
-    },
-    "6934832302633": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519880551
-    },
-    "6975728740597": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519890885
-    },
-    "6977526855145": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519901248
-    },
-    "6930201762572": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793519911604
-    },
-    "6925023209251": {
-      "status": "noGoods",
-      "message": "无商品",
-      "time": 1793525375003
     }
   },
-  "heartbeat": 1793525393640
+  "heartbeat": 1793544095511
 }
