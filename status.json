@@ -6269,7 +6269,17 @@
       "status": "noGoods",
       "message": "无商品",
       "time": 1793694840483
+    },
+    "6932701301565": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793694850821
+    },
+    "6977851591633": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1793694861123
     }
   },
-  "heartbeat": 1793694834454
+  "heartbeat": 1793694864449
 }
