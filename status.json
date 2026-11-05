@@ -6309,7 +6309,12 @@
       "status": "noGoods",
       "message": "无商品",
       "time": 1793348974014
+    },
+    "6971478752576": {
+      "status": "fail",
+      "message": "操作超时",
+      "time": 1793890882037
     }
   },
-  "heartbeat": 1793890866841
+  "heartbeat": 1793890896855
 }
