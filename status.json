@@ -6939,7 +6939,12 @@
       "status": "fail",
       "message": "操作超时",
       "time": 1795590810575
+    },
+    "6939531500274": {
+      "status": "noGoods",
+      "message": "无商品",
+      "time": 1795591281993
     }
   },
-  "heartbeat": 1795591264666
+  "heartbeat": 1795591294664
 }
